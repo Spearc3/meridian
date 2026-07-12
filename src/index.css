@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@theme {
+  --color-abyss: oklch(19% 0.055 240);
+  --color-deep: oklch(36% 0.075 232);
+  --color-tide: oklch(60% 0.085 210);
+  --color-surf: oklch(78% 0.08 195);
+  --color-mist: oklch(96% 0.01 220);
+  --color-gold: oklch(82% 0.13 85);
+
+  --color-background: var(--color-abyss);
+  --color-foreground: oklch(96% 0.01 220);
+  --color-card: oklch(24% 0.05 235);
+  --color-primary: var(--color-surf);
+  --color-primary-foreground: var(--color-abyss);
+  --color-secondary: oklch(28% 0.05 235);
+  --color-muted: oklch(28% 0.04 235);
+  --color-muted-foreground: oklch(72% 0.03 220);
+  --color-accent: var(--color-tide);
+  --color-border: oklch(100% 0 0 / 0.12);
+  --color-input: oklch(100% 0 0 / 0.15);
+  --color-ring: var(--color-surf);
+
+  --font-display: "Cormorant Garamond", "Cormorant", ui-serif, Georgia, serif;
+  --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
+
+  --radius: 0.25rem;
+
+  --animate-floaty: floaty 6s ease-in-out infinite;
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes floaty {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+/* Paint the root itself, not just <body>: anything outside the body box —
+   rubber-band overscroll, the scrollbar gutter, the frame around a short page —
+   falls back to the browser's white otherwise. `color-scheme: dark` also stops
+   the UA painting a white canvas before our CSS lands. */
+html {
+  background-color: var(--color-abyss);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-abyss);
+  background-image: radial-gradient(
+    ellipse at top,
+    oklch(24% 0.06 235) 0%,
+    var(--color-abyss) 60%
+  );
+  background-repeat: no-repeat;
+  /* The gradient tracks the viewport rather than the (very long) document, so it
+     stays a glow at the top instead of being stretched down the whole page. */
+  background-attachment: fixed;
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100svh;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-abyss);
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(36% 0.075 232);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-tide);
+}
+
+@utility container-editorial {
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding-inline: calc(var(--spacing) * 6);
+
+  @media (width >= 48rem) {
+    padding-inline: calc(var(--spacing) * 10);
+  }
+}
+
+@utility text-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  line-height: 0.95;
+}
+
+@utility eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-primary) 90%, transparent);
+}
+
+/* Hairline underline that draws left-to-right on hover. */
+@utility gold-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  transition: background-size 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  &:hover {
+    background-size: 100% 1px;
+  }
+}
+
+@utility animate-reveal {
+  animation: reveal-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
