@@ -40,9 +40,9 @@ export default function Home() {
             className="text-display mt-6 text-[14vw] leading-[0.85] animate-reveal md:text-[10rem]"
             style={{ animationDelay: "0.15s" }}
           >
-            You are the
+            Be the <span className="italic text-primary">director</span>
             <br />
-            <span className="italic text-primary">editor</span> of this story.
+            in your story.
           </h1>
           <div
             className="mt-10 flex flex-col items-start justify-between gap-6 animate-reveal md:flex-row md:items-end"
@@ -331,8 +331,8 @@ export default function Home() {
           <Reveal>
             <p className="eyebrow">From the founder</p>
             <blockquote className="text-display mt-8 text-4xl leading-tight md:text-6xl">
-              "We don't sell trips, and we don't write your story for you. We
-              hand you the pen —
+              "We don't sell trips, and we don't direct your journey for you. We
+              hand you the chair —
               <span className="italic text-primary">
                 {" "}
                 and carry everything else.

@@ -3,7 +3,7 @@ import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
 import Reveal from "../components/Reveal";
 
 const details = [
-  { icon: Mail, label: "Editors' desk", value: "atelier@meridian.co" },
+  { icon: Mail, label: "The planning desk", value: "atelier@meridian.co" },
   { icon: Phone, label: "Ring us", value: "+39 010 555 0134" },
   { icon: MapPin, label: "Studio", value: "Via del Campo 14, Genoa" },
 ];
@@ -47,7 +47,7 @@ export default function Contact() {
           style={{ animationDelay: "0.2s" }}
         >
           A voyage begins with a conversation. Share as little or as much as you
-          like — an editor will write back within two working days, from wherever
+          like — a planner will write back within two working days, from wherever
           they happen to be.
         </p>
       </section>
@@ -62,7 +62,7 @@ export default function Contact() {
                   Thank you, {form.name.split(" ")[0]}.
                 </h2>
                 <p className="mt-4 text-muted-foreground">
-                  An editor will write back to {form.email} within two working
+                  A planner will write back to {form.email} within two working
                   days.
                 </p>
                 <button
@@ -190,7 +190,7 @@ export default function Contact() {
               <p className="eyebrow">Response time</p>
               <p className="text-display mt-3 text-4xl text-primary">≤ 48h</p>
               <p className="mt-3 text-sm text-muted-foreground">
-                Every letter is read by a human editor, never a bot.
+                Every letter is read by a human planner, never a bot.
               </p>
             </div>
           </Reveal>

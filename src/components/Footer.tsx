@@ -44,11 +44,11 @@ export default function Footer() {
         <div className="md:col-span-5">
           <p className="eyebrow">Meridian · Est. 2019</p>
           <h3 className="text-display mt-4 text-4xl leading-tight">
-            You write it. <br /> We arrange everything else.
+            You direct it. <br /> We arrange everything else.
           </h3>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
-            A travel atelier for people who would rather author a journey than
-            book one. You are the editor; we are the desk behind you — the rooms,
+            A travel atelier for people who would rather direct a journey than
+            book one. You call the shots; we are the crew behind you — the rooms,
             the guides, the tide tables, the whole apparatus.
           </p>
         </div>

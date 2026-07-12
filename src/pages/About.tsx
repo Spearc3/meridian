@@ -11,9 +11,9 @@ const stats = [
 ];
 
 const paragraphs = [
-  "Meridian began in a room above a Genoese bookshop in 2019, with a shortwave radio, a wall of pinned maps, and a single unshakeable belief: that the person travelling should be the one telling the story.",
+  "Meridian began in a room above a Genoese bookshop in 2019, with a shortwave radio, a wall of pinned maps, and a single unshakeable belief: that the person travelling should be the one directing it.",
   "We are twelve — planners, fixers, a cartographer, and a sommelier of quiet places. We do not run tours. We compose roughly forty private journeys a season, each one built around a family, a couple, or a single traveller who knew what they wanted and needed someone to arrange it.",
-  "Our job is the invisible half: the room that faces the right way, the guide who is worth the early start, the tide table that decides your Tuesday. You keep the pen. We keep the logistics, the contingencies, and the phone number you call at 3am."
+  "Our job is the invisible half: the room that faces the right way, the guide who is worth the early start, the tide table that decides your Tuesday. You call the shots. We keep the logistics, the contingencies, and the phone number you ring at 3am."
 ];
 
 export default function About() {
@@ -83,8 +83,8 @@ export default function About() {
         <Reveal>
           <p className="eyebrow">Manifesto</p>
           <blockquote className="text-display mx-auto mt-8 max-w-4xl text-4xl leading-tight md:text-6xl">
-            You are the editor.
-            <span className="italic text-primary"> We are merely the press.</span>
+            You are the director.
+            <span className="italic text-primary"> We are merely the crew.</span>
           </blockquote>
           <Link
             to="/contact"

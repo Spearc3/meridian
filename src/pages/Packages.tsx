@@ -27,7 +27,7 @@ export default function Packages() {
           style={{ animationDelay: "0.2s" }}
         >
           Each of these is a starting point, not a product. Tell us which one is
-          closest and an editor will take it apart and rebuild it around you.
+          closest and a planner will take it apart and rebuild it around you.
         </p>
       </section>
 
