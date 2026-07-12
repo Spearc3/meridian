@@ -22,7 +22,7 @@ export default function About() {
       <section className="container-editorial pt-40 pb-24">
         <p className="eyebrow animate-reveal">The Atelier</p>
         <h1
-          className="text-display mt-6 max-w-5xl text-6xl leading-[0.95] animate-reveal md:text-8xl"
+          className="text-display mt-6 max-w-5xl text-4xl leading-[1.05] animate-reveal sm:text-6xl sm:leading-[0.95] md:text-8xl"
           style={{ animationDelay: "0.1s" }}
         >
           A small studio, <em className="text-primary">seven time zones</em>, and

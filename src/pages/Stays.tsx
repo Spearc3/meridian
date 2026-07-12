@@ -22,7 +22,7 @@ export default function Stays() {
         <div className="container-editorial relative z-10 pb-16">
           <p className="eyebrow animate-reveal">The Register · Volume III</p>
           <h1
-            className="text-display mt-6 text-7xl leading-[0.9] animate-reveal md:text-9xl"
+            className="text-display mt-6 text-5xl leading-[0.9] animate-reveal sm:text-7xl md:text-9xl"
             style={{ animationDelay: "0.15s" }}
           >
             Rooms worth
@@ -45,7 +45,7 @@ export default function Stays() {
             <button
               key={kind}
               onClick={() => setActive(kind)}
-              className={`border px-4 py-2 text-[11px] uppercase tracking-[0.22em] transition-colors ${
+              className={`min-h-11 border px-4 py-2 text-[11px] uppercase tracking-[0.22em] transition-colors ${
                 active === kind
                   ? "border-primary/60 text-primary"
                   : "border-border/60 text-muted-foreground hover:border-primary/60 hover:text-primary"
@@ -56,7 +56,7 @@ export default function Stays() {
           ))}
         </div>
 
-        <div className="space-y-20">
+        <div className="space-y-16 md:space-y-20">
           {visible.map((stay, i) => (
             <Reveal key={stay.slug} delay={(i % 2) * 0.08}>
               {/* Alternating sides: reads as a printed register, not a card grid. */}

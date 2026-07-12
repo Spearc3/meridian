@@ -103,12 +103,14 @@ export default function Footer() {
               setEmail("");
             }}
           >
+            {/* min-w-0: a flex child won't shrink below an input's intrinsic
+                width, which pushed the Join button off-screen on tablets. */}
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email"
-              className="flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/60"
+              className="w-full min-w-0 flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-muted-foreground/60"
             />
             <button className="border-l border-border/60 px-5 text-xs uppercase tracking-[0.24em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
               Join

@@ -37,7 +37,7 @@ export default function DestinationDetail() {
             {dest.issue} · {dest.category}
           </p>
           <h1
-            className="text-display mt-6 text-7xl leading-[0.9] animate-reveal md:text-9xl"
+            className="text-display mt-6 text-5xl leading-[0.9] animate-reveal sm:text-7xl md:text-9xl"
             style={{ animationDelay: "0.1s" }}
           >
             {dest.name}

@@ -48,7 +48,7 @@ export default function Header() {
           <span className="text-display text-2xl tracking-wide">Meridian</span>
         </Link>
 
-        <nav className="hidden items-center gap-10 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex xl:gap-10">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -64,7 +64,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <Link
             to="/contact"
             className="group inline-flex items-center gap-2 border border-primary/60 px-5 py-2.5 text-xs uppercase tracking-[0.24em] text-primary transition-all hover:bg-primary hover:text-primary-foreground"
@@ -77,7 +77,7 @@ export default function Header() {
         </div>
 
         <button
-          className="text-foreground md:hidden"
+          className="-mr-2 p-2 text-foreground lg:hidden"
           aria-label="Menu"
           onClick={() => setOpen((v) => !v)}
         >
@@ -86,14 +86,14 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav className="border-t border-border/40 bg-abyss/95 backdrop-blur-xl md:hidden">
+        <nav className="border-t border-border/40 bg-abyss/95 backdrop-blur-xl lg:hidden">
           <div className="container-editorial flex flex-col gap-6 py-8">
             {links.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `text-sm uppercase tracking-[0.24em] ${
+                  `py-1 text-sm uppercase tracking-[0.24em] ${
                     isActive ? "text-primary" : "text-foreground/80"
                   }`
                 }

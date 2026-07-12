@@ -24,7 +24,7 @@ export default function Destinations() {
         <div className="container-editorial relative z-10 pb-16">
           <p className="eyebrow animate-reveal">The Atlas · Volume II</p>
           <h1
-            className="text-display mt-6 text-7xl leading-[0.9] animate-reveal md:text-9xl"
+            className="text-display mt-6 text-5xl leading-[0.9] animate-reveal sm:text-7xl md:text-9xl"
             style={{ animationDelay: "0.15s" }}
           >
             Destinations,
@@ -40,7 +40,7 @@ export default function Destinations() {
             <button
               key={category}
               onClick={() => setActive(category)}
-              className={`border px-4 py-2 text-[11px] uppercase tracking-[0.22em] transition-colors ${
+              className={`min-h-11 border px-4 py-2 text-[11px] uppercase tracking-[0.22em] transition-colors ${
                 active === category
                   ? "border-primary/60 text-primary"
                   : "border-border/60 text-muted-foreground hover:border-primary/60 hover:text-primary"

@@ -15,7 +15,7 @@ export default function Packages() {
       <section className="container-editorial pt-40 pb-16">
         <p className="eyebrow animate-reveal">Journeys · Composed</p>
         <h1
-          className="text-display mt-6 text-7xl leading-[0.9] animate-reveal md:text-9xl"
+          className="text-display mt-6 text-5xl leading-[0.9] animate-reveal sm:text-7xl md:text-9xl"
           style={{ animationDelay: "0.1s" }}
         >
           Six ways
@@ -37,7 +37,7 @@ export default function Packages() {
             <button
               key={style}
               onClick={() => setActive(style)}
-              className={`border px-4 py-2 text-[11px] uppercase tracking-[0.22em] transition-colors ${
+              className={`min-h-11 border px-4 py-2 text-[11px] uppercase tracking-[0.22em] transition-colors ${
                 active === style
                   ? "border-primary/60 text-primary"
                   : "border-border/60 text-muted-foreground hover:border-primary/60 hover:text-primary"
@@ -70,10 +70,10 @@ export default function Packages() {
                   </div>
                 </div>
 
-                <div className="flex flex-1 flex-col p-8">
+                <div className="flex flex-1 flex-col p-6 md:p-8">
                   <p className="text-muted-foreground">{pkg.tagline}</p>
 
-                  <dl className="mt-6 grid grid-cols-3 gap-4 border-y border-border/50 py-5">
+                  <dl className="mt-6 grid grid-cols-1 gap-4 border-y border-border/50 py-5 sm:grid-cols-3">
                     <div>
                       <dt className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
                         Duration

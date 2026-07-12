@@ -9,7 +9,6 @@ import Stays from "./pages/Stays";
 import Experiences from "./pages/Experiences";
 import Packages from "./pages/Packages";
 import Stories from "./pages/Stories";
-import StoryDetail from "./pages/StoryDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -29,7 +28,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/packages" element={<Packages />} />
           <Route path="/stories" element={<Stories />} />
-          <Route path="/stories/:slug" element={<StoryDetail />} />
+          <Route path="/stories/:slug" element={<Stories />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />

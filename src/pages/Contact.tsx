@@ -35,7 +35,7 @@ export default function Contact() {
       <section className="container-editorial pt-40 pb-16">
         <p className="eyebrow animate-reveal">Commission</p>
         <h1
-          className="text-display mt-6 text-7xl leading-[0.9] animate-reveal md:text-9xl"
+          className="text-display mt-6 text-5xl leading-[0.9] animate-reveal sm:text-7xl md:text-9xl"
           style={{ animationDelay: "0.1s" }}
         >
           Tell us where
@@ -157,7 +157,7 @@ export default function Contact() {
           </Reveal>
         </div>
 
-        <aside className="space-y-10 border-l border-border/50 lg:col-span-5 lg:pl-12">
+        <aside className="space-y-10 border-t border-border/50 pt-10 lg:col-span-5 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
           <Reveal>
             <p className="eyebrow">The Atelier</p>
             <p className="mt-4 text-muted-foreground">
