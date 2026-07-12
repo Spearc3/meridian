@@ -60,6 +60,8 @@ export type Dispatch = {
   audioUrl?: string;
   videoUrl?: string;
   duration?: string;
+  /** shown under the audio transport */
+  transcript?: string;
   /** true for pages bound by readers, kept in localStorage */
   submitted?: boolean;
 };
@@ -157,9 +159,8 @@ export const dispatches: Dispatch[] = [
     duration: "12 sec listen",
     cover: maldives,
     audioUrl: surfAudio,
-    body: [
+    transcript:
       "Recorded from the end of the jetty at 04:40, before the wind got up. Two microphones, no processing. The long swell arrives about every six seconds; the hiss underneath it is the foam draining back through the coral.",
-    ],
   },
 ];
 

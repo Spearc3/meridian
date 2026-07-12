@@ -38,21 +38,9 @@ export default function Stories() {
   );
   const chapters = useMemo(() => chaptersOf(visible), [visible]);
 
-  // A shared link may point at a page the current filter hides, so fall back to
-  // the whole book when resolving what to read.
-  const readingIndex = visible.findIndex((d) => d.slug === reading);
-  const page =
-    readingIndex >= 0
-      ? visible[readingIndex]
-      : (all.find((d) => d.slug === reading) ?? null);
-
-  const step = (delta: number) => {
-    const list = readingIndex >= 0 ? visible : all;
-    if (!list.length) return;
-    const from = list.findIndex((d) => d.slug === reading);
-    const next = (from + delta + list.length) % list.length;
-    openPage(list[next].slug);
-  };
+  // A shared link may point at a page the current filter hides, so resolve
+  // against the whole book.
+  const page = all.find((d) => d.slug === reading) ?? null;
 
   const bind = (draft: Omit<Dispatch, "slug">) => {
     const taken = new Set(all.map((d) => d.slug));
@@ -165,12 +153,7 @@ export default function Stories() {
       )}
 
       {page && (
-        <DispatchReader
-          page={page}
-          onClose={() => navigate("/stories")}
-          onPrev={() => step(-1)}
-          onNext={() => step(1)}
-        />
+        <DispatchReader page={page} onClose={() => navigate("/stories")} />
       )}
 
       <ContributeDrawer

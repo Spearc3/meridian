@@ -193,7 +193,40 @@ export default function DispatchCard({
     );
   }
 
-  // Essay and film share the cover-led layout; film gets a play affordance.
+  // Film reads as a screen: 16:9, the cover dimmed behind a play head.
+  if (page.format === "film") {
+    return (
+      <button onClick={onOpen} className="group w-full text-left">
+        <div className="relative aspect-video overflow-hidden bg-abyss">
+          {page.cover && (
+            <img
+              src={page.cover}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-90"
+            />
+          )}
+          <span className="absolute inset-0 grid place-items-center">
+            <span className="grid h-16 w-16 place-items-center rounded-full bg-primary/90 text-primary-foreground transition-transform group-hover:scale-110">
+              <Play size={24} className="ml-1" fill="currentColor" />
+            </span>
+          </span>
+          <div className="absolute left-3 top-3">
+            <Badge format="film" />
+          </div>
+        </div>
+        <p className="eyebrow mt-4">
+          {page.place}
+          {page.readTime ? ` · ${page.readTime}` : ""}
+        </p>
+        <h3 className="text-display mt-2 text-2xl leading-tight transition-colors group-hover:text-primary">
+          {page.title}
+        </h3>
+      </button>
+    );
+  }
+
+  // Essays lead with the cover.
   return (
     <button onClick={onOpen} className="group w-full text-left">
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
@@ -208,13 +241,6 @@ export default function DispatchCard({
         <div className="absolute left-3 top-3">
           <Badge format={page.format} />
         </div>
-        {page.format === "film" && (
-          <span className="absolute inset-0 grid place-items-center">
-            <span className="grid h-16 w-16 place-items-center rounded-full border border-primary/60 bg-abyss/50 text-primary backdrop-blur transition-transform group-hover:scale-110">
-              <Play size={20} className="ml-1" fill="currentColor" />
-            </span>
-          </span>
-        )}
       </div>
       <p className="eyebrow mt-5">
         {page.place}

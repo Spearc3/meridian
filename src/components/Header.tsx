@@ -28,7 +28,9 @@ export default function Header() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "bg-abyss/80 backdrop-blur-xl" : "bg-transparent"
+        scrolled
+          ? "bg-abyss/70 backdrop-blur-xl backdrop-saturate-150"
+          : "bg-abyss/15 backdrop-blur-md backdrop-saturate-150"
       }`}
     >
       {/* The bar used to end in a 1px border. Since that border is white at low

@@ -48,6 +48,42 @@
       transform: translateY(-8px);
     }
   }
+
+  /* The Field Book's leaf swinging in on its spine. */
+  @keyframes page-turn-next {
+    from {
+      opacity: 0;
+      transform: rotateY(25deg) translateX(80px);
+    }
+    to {
+      opacity: 1;
+      transform: rotateY(0) translateX(0);
+    }
+  }
+
+  @keyframes page-turn-prev {
+    from {
+      opacity: 0;
+      transform: rotateY(-25deg) translateX(-80px);
+    }
+    to {
+      opacity: 1;
+      transform: rotateY(0) translateX(0);
+    }
+  }
+
+  @keyframes waveform {
+    0%,
+    100% {
+      transform: scaleY(0.4);
+    }
+    30% {
+      transform: scaleY(1.1);
+    }
+    60% {
+      transform: scaleY(0.6);
+    }
+  }
 }
 
 /* Paint the root itself, not just <body>: anything outside the body box —
