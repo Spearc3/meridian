@@ -37,8 +37,8 @@ export default function Header() {
         aria-hidden
         className={`pointer-events-none absolute inset-0 -bottom-6 backdrop-saturate-150 transition-all duration-500 [mask-image:linear-gradient(to_bottom,black_0%,black_60%,transparent_100%)] ${
           scrolled
-            ? "bg-gradient-to-b from-abyss via-abyss/85 to-transparent backdrop-blur-sm"
-            : "bg-gradient-to-b from-abyss/70 via-abyss/40 to-transparent backdrop-blur-[2px]"
+            ? "bg-gradient-to-b from-abyss/55 via-abyss/35 to-transparent backdrop-blur-sm"
+            : "bg-gradient-to-b from-abyss/30 via-abyss/15 to-transparent backdrop-blur-[2px]"
         }`}
       />
       {/* relative z-10: the blur layer above is positioned, so without this the
