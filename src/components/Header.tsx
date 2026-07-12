@@ -27,22 +27,23 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-abyss/70 backdrop-blur-xl backdrop-saturate-150"
-          : "bg-abyss/15 backdrop-blur-md backdrop-saturate-150"
-      }`}
+      className="fixed inset-x-0 top-0 z-50"
     >
-      {/* The bar used to end in a 1px border. Since that border is white at low
-          opacity, over a bright photo it read as a white strip between the bar
-          and the hero. A soft fade dissolves the edge instead. */}
-      {scrolled && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-full h-8 bg-gradient-to-b from-abyss/80 to-transparent"
-        />
-      )}
-      <div className="container-editorial flex h-20 items-center justify-between">
+      {/* The tint and the blur both live on this masked layer. Masking an element
+          fades its backdrop-filter as well as its background, so the bar is
+          strongest at the very top and dissolves to nothing at its lower edge —
+          no band, no hard line against the photo behind it. */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 -bottom-6 backdrop-saturate-150 transition-all duration-500 [mask-image:linear-gradient(to_bottom,black_0%,black_60%,transparent_100%)] ${
+          scrolled
+            ? "bg-gradient-to-b from-abyss via-abyss/85 to-transparent backdrop-blur-sm"
+            : "bg-gradient-to-b from-abyss/70 via-abyss/40 to-transparent backdrop-blur-[2px]"
+        }`}
+      />
+      {/* relative z-10: the blur layer above is positioned, so without this the
+          nav would paint *under* it and get blurred along with the backdrop. */}
+      <div className="container-editorial relative z-10 flex h-20 items-center justify-between">
         <Link to="/" className="group flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center border border-primary/50 text-primary transition-all group-hover:rotate-45">
             <span className="text-display text-lg leading-none">M</span>
