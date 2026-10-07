@@ -6,7 +6,6 @@ import Process from "../components/Process";
 import EnquiryForm from "../components/EnquiryForm";
 import hero from "../assets/tpl-shanghai-snow.jpg";
 import {
-  clients,
   corporateEnquiry,
   corporateServices,
   essentials,
@@ -127,27 +126,6 @@ export default function Corporate() {
                 </div>
               </div>
             </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <section className="container-editorial py-24">
-        <Reveal>
-          <p className="eyebrow">Our elite corporate portfolio</p>
-          <h2 className="text-display mt-4 max-w-2xl text-5xl md:text-6xl">
-            Trusted by the organizations that travel with us.
-          </h2>
-        </Reveal>
-        <div className="mt-14 grid grid-cols-2 gap-px border border-border/50 bg-border/50 sm:grid-cols-3 lg:grid-cols-6">
-          {clients.map((client) => (
-            <div
-              key={client}
-              className="flex min-h-[80px] items-center justify-center bg-abyss px-4 py-5 text-center"
-            >
-              <span className="text-display text-lg leading-tight text-foreground/85">
-                {client}
-              </span>
-            </div>
           ))}
         </div>
       </section>

@@ -14,7 +14,6 @@ import shanghaiSnow from "./assets/tpl-shanghai-snow.jpg";
 import cappadocia from "./assets/tpl-cappadocia.jpg";
 import vietnamNight from "./assets/tpl-vietnam-night.jpg";
 import halongCruise from "./assets/tpl-halong-cruise.jpg";
-import vietnamPartner from "./assets/tpl-vietnam-partner.jpg";
 import hcmcPalace from "./assets/tpl-hcmc-palace.jpg";
 import phuket from "./assets/tpl-phuket.jpg";
 import bangkokSkywalk from "./assets/tpl-bangkok-skywalk.jpg";
@@ -225,34 +224,6 @@ export const globalReach = [
   "Travel Insurance Solutions",
 ];
 
-/** "Our Elite Corporate Portfolio", set as type rather than a wall of logos. */
-export const clients = [
-  "Asian Paints Causeway",
-  "Nippon Paint",
-  "VS One",
-  "Metropolitan",
-  "Epson",
-  "Softlogic",
-  "Debug Digital Centre",
-  "LOLC",
-  "NDB Bank",
-  "Acer",
-  "CIC",
-  "Trident Corporation",
-  "JAT Holdings PLC",
-  "Canon",
-  "HNB Assurance",
-  "Lenovo",
-  "HP",
-  "Ino Lanka",
-  "Browns Agriculture",
-  "Atlas Axillia",
-  "Plantchem & Plantseeds",
-  "Farmchemie",
-  "Accel",
-  "Texlan",
-];
-
 /** "Memories we created …" — photographs from the deck's closing pages. */
 export type Memory = {
   image: string;
@@ -267,7 +238,6 @@ export const memories: Memory[] = [
   { image: cappadocia, caption: "Cappadocia, Türkiye", note: "Incentive tour", audience: "corporate" },
   { image: halongCruise, caption: "Ha Long Bay, Vietnam", note: "Group cruise", audience: "personal" },
   { image: phuket, caption: "Phuket, Thailand", note: "Group tour", audience: "personal" },
-  { image: vietnamPartner, caption: "Vietnam", note: "Canon partner tour 2025", audience: "corporate" },
   { image: shanghaiGarden, caption: "Shanghai, China", note: "Yu Garden", audience: "corporate" },
   { image: bangkokSkywalk, caption: "Bangkok, Thailand", note: "SkyWalk", audience: "personal" },
   { image: vietnamNight, caption: "Vietnam, after dark", note: "Incentive tour", audience: "corporate" },

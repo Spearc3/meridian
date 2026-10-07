@@ -4,7 +4,6 @@ import Reveal from "../components/Reveal";
 import ServiceIcon from "../components/ServiceIcon";
 import hero from "../assets/hero-ocean.jpg";
 import {
-  clients,
   coreServices,
   headlineStats,
   leadership,
@@ -12,12 +11,6 @@ import {
   visionMission,
   whoWeAre,
 } from "../tpl";
-
-const stats = [
-  ...headlineStats.slice(0, 2),
-  { value: String(clients.length), label: "Corporate clients" },
-  headlineStats[2],
-];
 
 export default function About() {
   return (
@@ -180,8 +173,8 @@ export default function About() {
           className="absolute inset-0 h-full w-full object-cover opacity-30"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-abyss via-abyss/60 to-abyss" />
-        <div className="container-editorial relative grid grid-cols-2 gap-12 md:grid-cols-4">
-          {stats.map((stat, i) => (
+        <div className="container-editorial relative grid grid-cols-1 gap-12 sm:grid-cols-3">
+          {headlineStats.map((stat, i) => (
             <Reveal key={stat.label} delay={i * 0.1}>
               <div className="border-t border-primary/60 pt-6">
                 <p className="text-display text-6xl text-primary md:text-7xl">
@@ -190,28 +183,6 @@ export default function About() {
                 <p className="mt-4 text-xs uppercase tracking-[0.24em] text-muted-foreground">
                   {stat.label}
                 </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* Corporate portfolio */}
-      <section className="container-editorial py-32">
-        <Reveal>
-          <p className="eyebrow">Our elite corporate portfolio</p>
-          <h2 className="text-display mt-4 max-w-2xl text-5xl md:text-6xl">
-            The organizations that travel with us.
-          </h2>
-        </Reveal>
-
-        <div className="mt-16 grid grid-cols-2 gap-px border border-border/50 bg-border/50 sm:grid-cols-3 lg:grid-cols-4">
-          {clients.map((client, i) => (
-            <Reveal key={client} delay={(i % 4) * 0.05}>
-              <div className="flex h-full min-h-[92px] items-center justify-center bg-abyss px-5 py-6 text-center transition-colors hover:bg-secondary/30">
-                <span className="text-display text-xl leading-tight text-foreground/85">
-                  {client}
-                </span>
               </div>
             </Reveal>
           ))}

@@ -7,7 +7,7 @@ import HeroWaves from "../components/HeroWaves";
 import MemoryWall from "../components/MemoryWall";
 import Process from "../components/Process";
 import personalImage from "../assets/tpl-halong-cruise.jpg";
-import corporateImage from "../assets/tpl-vietnam-partner.jpg";
+import corporateImage from "../assets/tpl-shanghai-garden.jpg";
 import {
   company,
   globalReach,
