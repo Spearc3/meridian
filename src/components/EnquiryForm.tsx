@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown, Mail } from "lucide-react";
 import { company } from "../tpl";
 
 export type EnquiryField = {
@@ -46,7 +46,7 @@ export default function EnquiryForm({ fields, subject }: Props) {
 
   if (sent) {
     return (
-      <div className="border border-primary/50 bg-secondary/40 p-12">
+      <div className="rounded-md border border-primary/40 bg-card p-8 shadow-2xl shadow-black/30 md:p-12">
         <p className="eyebrow">Almost there</p>
         <h3 className="text-display mt-4 text-4xl">
           Thank you, {name.split(" ")[0]}.
@@ -71,67 +71,96 @@ export default function EnquiryForm({ fields, subject }: Props) {
   }
 
   const control =
-    "mt-3 w-full border-b border-border/60 bg-transparent py-3 text-lg outline-none transition-colors focus:border-primary";
+    "mt-2 block w-full rounded-md border border-white/20 bg-abyss/70 px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors hover:border-white/35 focus:border-primary focus:ring-2 focus:ring-primary/30";
 
   return (
-    <form className="grid grid-cols-1 gap-8 md:grid-cols-2" onSubmit={onSubmit}>
-      {fields.map((f) => {
-        const value = form[f.key];
-        const set = (v: string) => setForm((prev) => ({ ...prev, [f.key]: v }));
-        const id = `enquiry-${f.key}`;
-        return (
-          <div
-            key={f.key}
-            className={f.wide || f.type === "textarea" ? "md:col-span-2" : ""}
-          >
-            <label htmlFor={id} className="eyebrow">
-              {f.label}
-              {f.required && " *"}
-            </label>
-            {f.type === "select" ? (
-              <select
-                id={id}
-                required={f.required}
-                value={value}
-                onChange={(e) => set(e.target.value)}
-                className={`${control} [&>option]:bg-abyss`}
-              >
-                <option value="">Select…</option>
-                {f.options?.map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            ) : f.type === "textarea" ? (
-              <textarea
-                id={id}
-                rows={5}
-                required={f.required}
-                value={value}
-                onChange={(e) => set(e.target.value)}
-                placeholder={f.placeholder}
-                className={`${control} text-base`}
-              />
-            ) : (
-              <input
-                id={id}
-                type={f.type ?? "text"}
-                required={f.required}
-                value={value}
-                onChange={(e) => set(e.target.value)}
-                placeholder={f.placeholder}
-                className={control}
-              />
-            )}
-          </div>
-        );
-      })}
+    <form
+      onSubmit={onSubmit}
+      className="overflow-hidden rounded-md border border-primary/30 bg-card shadow-2xl shadow-black/30"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-secondary/60 px-6 py-4 md:px-10">
+        <p className="flex items-center gap-3 text-sm font-semibold text-foreground">
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/15 text-primary">
+            <Mail size={15} />
+          </span>
+          Enquiry form
+        </p>
+        <p className="text-xs text-muted-foreground">
+          <span className="text-primary">*</span> Required
+        </p>
+      </div>
 
-      <div className="md:col-span-2">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-6 p-6 md:grid-cols-2 md:p-10">
+        {fields.map((f) => {
+          const value = form[f.key];
+          const set = (v: string) => setForm((prev) => ({ ...prev, [f.key]: v }));
+          const id = `enquiry-${f.key}`;
+          return (
+            <div
+              key={f.key}
+              className={f.wide || f.type === "textarea" ? "md:col-span-2" : ""}
+            >
+              <label
+                htmlFor={id}
+                className="text-sm font-medium text-foreground/90"
+              >
+                {f.label}
+                {f.required && <span className="ml-1 text-primary">*</span>}
+              </label>
+              {f.type === "select" ? (
+                <div className="relative">
+                  <select
+                    id={id}
+                    required={f.required}
+                    value={value}
+                    onChange={(e) => set(e.target.value)}
+                    className={`${control} cursor-pointer appearance-none pr-10 ${value ? "" : "text-muted-foreground/70"} [&>option]:bg-abyss [&>option]:text-foreground`}
+                  >
+                    <option value="">Select…</option>
+                    {f.options?.map((o) => (
+                      <option key={o}>{o}</option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className="pointer-events-none absolute right-4 top-1/2 mt-1 -translate-y-1/2 text-muted-foreground"
+                  />
+                </div>
+              ) : f.type === "textarea" ? (
+                <textarea
+                  id={id}
+                  rows={5}
+                  required={f.required}
+                  value={value}
+                  onChange={(e) => set(e.target.value)}
+                  placeholder={f.placeholder}
+                  className={`${control} resize-y`}
+                />
+              ) : (
+                <input
+                  id={id}
+                  type={f.type ?? "text"}
+                  required={f.required}
+                  value={value}
+                  onChange={(e) => set(e.target.value)}
+                  placeholder={f.placeholder}
+                  className={control}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-col gap-4 border-t border-white/10 bg-secondary/30 px-6 py-5 sm:flex-row sm:items-center sm:justify-between md:px-10">
+        <p className="text-xs text-muted-foreground">
+          Opens your email app, addressed to {company.email}.
+        </p>
         <button
           type="submit"
-          className="group inline-flex items-center gap-3 border border-primary bg-primary px-8 py-4 text-xs uppercase tracking-[0.24em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+          className="group inline-flex w-full items-center justify-center gap-3 rounded-md bg-primary px-8 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground transition-colors hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-card sm:w-auto"
         >
-          Email the enquiry
+          Send enquiry
           <ArrowRight
             size={14}
             className="transition-transform group-hover:translate-x-1"
