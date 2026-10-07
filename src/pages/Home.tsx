@@ -4,7 +4,10 @@ import { ArrowDown, ArrowRight, Binoculars, Target } from "lucide-react";
 import Reveal from "../components/Reveal";
 import Globe from "../components/Globe";
 import HeroWaves from "../components/HeroWaves";
-import ServiceIcon from "../components/ServiceIcon";
+import MemoryWall from "../components/MemoryWall";
+import Process from "../components/Process";
+import personalImage from "../assets/tpl-halong-cruise.jpg";
+import corporateImage from "../assets/tpl-vietnam-partner.jpg";
 import {
   company,
   globalReach,
@@ -12,10 +15,28 @@ import {
   memories,
   pillars,
   regions,
-  solutions,
   visionMission,
   whoWeAre,
 } from "../tpl";
+
+const doors = [
+  {
+    to: "/personal-travel",
+    image: personalImage,
+    eyebrow: "Personal Travels",
+    title: "Curated holidays. Cherished memories.",
+    detail: "Leisure, luxury and group journeys, cruises and tailor-made itineraries.",
+    cta: "Plan a holiday",
+  },
+  {
+    to: "/corporate",
+    image: corporateImage,
+    eyebrow: "Corporate & Business",
+    title: "Smart solutions for modern businesses.",
+    detail: "Corporate travel management, MICE, and incentive and dealer tours.",
+    cta: "Request a proposal",
+  },
+];
 
 export default function Home() {
   const [offset, setOffset] = useState(0);
@@ -63,10 +84,10 @@ export default function Home() {
               corporate, incentive, leisure and group travel worldwide.
             </p>
             <Link
-              to="/contact"
+              to="/#paths"
               className="group inline-flex items-center gap-3 border-b border-primary/70 pb-2 text-sm uppercase tracking-[0.28em] text-primary"
             >
-              Talk to our travel desk
+              Find your journey
               <ArrowRight
                 size={16}
                 className="transition-transform group-hover:translate-x-1"
@@ -82,6 +103,38 @@ export default function Home() {
             </span>
             <ArrowDown size={14} className="animate-floaty" />
           </div>
+        </div>
+      </section>
+
+      {/* Two doors */}
+      <section id="paths" className="scroll-mt-20 container-editorial relative z-10 -mt-px py-24">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {doors.map((door, i) => (
+            <Reveal key={door.to} delay={i * 0.1}>
+              <Link to={door.to} className="group relative block aspect-[4/3] overflow-hidden bg-secondary">
+                <img
+                  src={door.image}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-8 md:p-10">
+                  <p className="eyebrow">{door.eyebrow}</p>
+                  <h2 className="text-display mt-3 text-4xl leading-tight md:text-5xl">
+                    {door.title}
+                  </h2>
+                  <p className="mt-3 max-w-md text-sm text-foreground/80">
+                    {door.detail}
+                  </p>
+                  <span className="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-primary">
+                    {door.cta}
+                    <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -229,44 +282,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Comprehensive travel solutions */}
-      <section id="services" className="relative scroll-mt-20 py-32">
-        <div className="container-editorial">
-          <div className="mb-16 max-w-3xl">
-            <Reveal>
-              <p className="eyebrow">What we arrange</p>
-              <h2 className="text-display mt-4 text-5xl md:text-6xl">
-                Comprehensive travel solutions.
-              </h2>
-              <p className="mt-6 text-lg text-muted-foreground">
-                Delivering seamless, end-to-end travel management services for
-                corporate, incentive, leisure and group travel worldwide.
-              </p>
-            </Reveal>
-          </div>
-
-          <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-2">
-            {solutions.map((solution, i) => (
-              <Reveal key={solution.title} delay={(i % 2) * 0.08}>
-                <div className="group flex h-full gap-5 bg-abyss p-8 transition-colors hover:bg-secondary/30">
-                  <span className="mt-1 grid h-11 w-11 shrink-0 place-items-center border border-primary/40 transition-colors group-hover:border-primary">
-                    <ServiceIcon name={solution.icon} />
-                  </span>
-                  <div>
-                    <h3 className="text-display text-2xl leading-tight">
-                      {solution.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {solution.detail}
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Memories */}
       <section id="memories" className="relative scroll-mt-20 py-32">
         <div className="container-editorial">
@@ -279,41 +294,17 @@ export default function Home() {
             </Reveal>
             <Reveal delay={0.1}>
               <p className="max-w-sm text-sm text-muted-foreground">
-                Dealer tours, partner tours and incentive trips we have
-                arranged for our corporate clients.
+                Dealer tours, partner tours, incentive trips and group holidays
+                we have arranged for our clients.
               </p>
             </Reveal>
           </div>
 
-          <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
-            {memories.map((memory, i) => (
-              <Reveal
-                key={memory.image}
-                delay={(i % 3) * 0.08}
-                className="mb-6 break-inside-avoid"
-              >
-                <figure className="group">
-                  <div className="relative overflow-hidden bg-secondary">
-                    <img
-                      src={memory.image}
-                      alt={`${memory.note} — ${memory.caption}`}
-                      loading="lazy"
-                      className="w-full transition-transform duration-[1200ms] group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-abyss/80 via-transparent to-transparent opacity-80" />
-                    <figcaption className="absolute inset-x-0 bottom-0 p-5">
-                      <p className="text-display text-2xl">{memory.caption}</p>
-                      <p className="mt-1 text-[10px] uppercase tracking-[0.24em] text-primary">
-                        {memory.note}
-                      </p>
-                    </figcaption>
-                  </div>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
+          <MemoryWall items={memories} />
         </div>
       </section>
+
+      <Process />
 
       {/* Plan a journey */}
       <section className="relative py-32">

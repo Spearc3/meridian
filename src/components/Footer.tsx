@@ -57,18 +57,13 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/#services" className="gold-underline">
-                Services
+              <Link to="/personal-travel" className="gold-underline">
+                Personal Travels
               </Link>
             </li>
             <li>
-              <Link to="/#network" className="gold-underline">
-                Global Network
-              </Link>
-            </li>
-            <li>
-              <Link to="/#memories" className="gold-underline">
-                Memories
+              <Link to="/corporate" className="gold-underline">
+                Corporate & Business
               </Link>
             </li>
             <li>

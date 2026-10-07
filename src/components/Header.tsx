@@ -4,9 +4,9 @@ import { Menu, X } from "lucide-react";
 import logo from "../assets/tpl-logo.png";
 
 const links = [
-  { to: "/#services", label: "Services" },
-  { to: "/#network", label: "Network" },
-  { to: "/#memories", label: "Memories" },
+  { to: "/", label: "Home" },
+  { to: "/personal-travel", label: "Personal Travels" },
+  { to: "/corporate", label: "Corporate & Business" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
@@ -55,9 +55,10 @@ export default function Header() {
             <NavLink
               key={link.to}
               to={link.to}
+              end
               className={({ isActive }) =>
                 `gold-underline whitespace-nowrap text-[12px] uppercase tracking-[0.18em] transition-colors hover:text-primary xl:text-[13px] ${
-                  isActive && !link.to.includes("#") ? "text-primary" : "text-foreground/80"
+                  isActive ? "text-primary" : "text-foreground/80"
                 }`
               }
             >
@@ -94,9 +95,10 @@ export default function Header() {
               <NavLink
                 key={link.to}
                 to={link.to}
+                end
                 className={({ isActive }) =>
                   `py-1 text-sm uppercase tracking-[0.24em] ${
-                    isActive && !link.to.includes("#") ? "text-primary" : "text-foreground/80"
+                    isActive ? "text-primary" : "text-foreground/80"
                   }`
                 }
               >

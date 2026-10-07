@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from "react";
-import { ArrowRight, Globe, Mail, MapPin, Phone } from "lucide-react";
+import { Globe, Mail, MapPin, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
+import EnquiryForm from "../components/EnquiryForm";
 import Reveal from "../components/Reveal";
-import { company, globalPartners } from "../tpl";
+import { company, generalEnquiry, globalPartners } from "../tpl";
 
 const details = [
   { icon: Mail, label: "The travel desk", value: company.email },
@@ -11,39 +12,6 @@ const details = [
 ];
 
 export default function Contact() {
-  const [sent, setSent] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    where: "",
-    when: "",
-    story: "",
-  });
-
-  const set = (key: keyof typeof form) => (value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
-
-  // No backend yet: the enquiry is handed to the visitor's own mail app,
-  // addressed to the travel desk, so nothing is silently dropped.
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!form.name || !form.email) return;
-    const body = [
-      `Name: ${form.name}`,
-      `Email: ${form.email}`,
-      `Destination: ${form.where || "-"}`,
-      `Dates / group size: ${form.when || "-"}`,
-      "",
-      form.story,
-    ].join("\n");
-    const subject = `Travel enquiry from ${form.name}`;
-    window.location.href = `mailto:${company.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSent(true);
-  };
-
-  const field =
-    "mt-3 w-full border-b border-border/60 bg-transparent py-3 text-lg outline-none transition-colors focus:border-primary";
-
   return (
     <>
       <section className="container-editorial pt-40 pb-16">
@@ -60,116 +28,19 @@ export default function Contact() {
           className="mt-8 max-w-2xl text-lg text-muted-foreground animate-reveal"
           style={{ animationDelay: "0.2s" }}
         >
-          Every journey begins with a conversation. Corporate travel, MICE,
-          incentive tours, leisure or group travel — tell us the shape of it and
-          our team in Colombo will come back with a proposal.
+          Every journey begins with a conversation. Call the hotline, write to
+          us, or send a message below. For a detailed quote, use the{" "}
+          <Link to="/personal-travel#plan" className="gold-underline text-primary">holiday</Link>{" "}
+          or{" "}
+          <Link to="/corporate#proposal" className="gold-underline text-primary">corporate</Link>{" "}
+          enquiry forms.
         </p>
       </section>
 
       <section className="container-editorial grid grid-cols-1 gap-16 pb-32 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <Reveal>
-            {sent ? (
-              <div className="border border-primary/50 bg-secondary/40 p-12">
-                <p className="eyebrow">Almost there</p>
-                <h2 className="text-display mt-4 text-4xl">
-                  Thank you, {form.name.split(" ")[0]}.
-                </h2>
-                <p className="mt-4 text-muted-foreground">
-                  Your email app should have opened with the enquiry ready to
-                  send. If it didn't, write to us at{" "}
-                  <span className="text-foreground">{company.email}</span> or
-                  call {company.hotline}.
-                </p>
-                <button
-                  onClick={() => {
-                    setSent(false);
-                    setForm({
-                      name: "",
-                      email: "",
-                      where: "",
-                      when: "",
-                      story: "",
-                    });
-                  }}
-                  className="mt-8 gold-underline text-sm uppercase tracking-[0.24em] text-primary"
-                >
-                  Send another →
-                </button>
-              </div>
-            ) : (
-              <form className="space-y-8" onSubmit={onSubmit}>
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                  <div>
-                    <label className="eyebrow">Your name</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.name}
-                      onChange={(e) => set("name")(e.target.value)}
-                      placeholder="Your name"
-                      className={field}
-                    />
-                  </div>
-                  <div>
-                    <label className="eyebrow">Email</label>
-                    <input
-                      type="email"
-                      required
-                      value={form.email}
-                      onChange={(e) => set("email")(e.target.value)}
-                      placeholder="you@somewhere.com"
-                      className={field}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                  <div>
-                    <label className="eyebrow">Where in the world</label>
-                    <input
-                      type="text"
-                      value={form.where}
-                      onChange={(e) => set("where")(e.target.value)}
-                      placeholder="Bangkok, Dubai, Ho Chi Minh City…"
-                      className={field}
-                    />
-                  </div>
-                  <div>
-                    <label className="eyebrow">When</label>
-                    <input
-                      type="text"
-                      value={form.when}
-                      onChange={(e) => set("when")(e.target.value)}
-                      placeholder="Late October, five days, 40 pax"
-                      className={field}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="eyebrow">The brief</label>
-                  <textarea
-                    rows={6}
-                    value={form.story}
-                    onChange={(e) => set("story")(e.target.value)}
-                    placeholder="Tell us about the group, the occasion, and anything the itinerary has to work around…"
-                    className="mt-3 w-full border-b border-border/60 bg-transparent py-3 outline-none transition-colors focus:border-primary"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="group inline-flex items-center gap-3 border border-primary bg-primary px-8 py-4 text-xs uppercase tracking-[0.24em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
-                >
-                  Email the enquiry
-                  <ArrowRight
-                    size={14}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
-                </button>
-              </form>
-            )}
+            <EnquiryForm fields={generalEnquiry} subject="Website enquiry" />
           </Reveal>
         </div>
 

@@ -12,6 +12,9 @@ import {
   Ship,
   ShieldCheck,
   Users,
+  Plane,
+  Palmtree,
+  Presentation,
 } from "lucide-react";
 
 /** Keyed by the `icon` field on the service lists in `tpl.ts`, which — being a
@@ -30,6 +33,9 @@ const icons: Record<string, ComponentType<{ size?: number; className?: string }>
     headphones: Headphones,
     briefcase: Briefcase,
     gem: Gem,
+    plane: Plane,
+    palm: Palmtree,
+    presentation: Presentation,
   };
 
 export default function ServiceIcon({
