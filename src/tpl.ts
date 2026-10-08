@@ -224,6 +224,9 @@ export const globalReach = [
 /** "Memories we created …" — photographs from the deck's closing pages. */
 export type Memory = {
   image: string;
+  /** Intrinsic size, so the wall reserves each photo's space before it loads. */
+  width: number;
+  height: number;
   /** Only set where the deck's coverage list names the country and the
    *  photograph is unmistakably there; otherwise the wall shows a neutral title. */
   country?: string;
@@ -234,14 +237,14 @@ export type Memory = {
 };
 
 export const memories: Memory[] = [
-  { image: memory01, country: "China", note: "Corporate incentive tour", audience: "corporate" },
-  { image: memory02, note: "Corporate incentive tour", audience: "corporate" },
-  { image: memory03, note: "Cruise", audience: "personal" },
-  { image: memory04, country: "Thailand", note: "Group tour", audience: "personal" },
-  { image: memory05, country: "China", note: "Group tour", audience: "corporate" },
-  { image: memory06, country: "Thailand", note: "Group tour", audience: "personal" },
-  { image: memory07, note: "Corporate incentive tour", audience: "corporate" },
-  { image: memory08, note: "Leisure tour", audience: "personal" },
+  { image: memory01, width: 1307, height: 813, country: "China", note: "Corporate incentive tour", audience: "corporate" },
+  { image: memory02, width: 794, height: 1059, note: "Corporate incentive tour", audience: "corporate" },
+  { image: memory03, width: 1048, height: 810, note: "Cruise", audience: "personal" },
+  { image: memory04, width: 842, height: 627, country: "Thailand", note: "Group tour", audience: "personal" },
+  { image: memory05, width: 1280, height: 720, country: "China", note: "Group tour", audience: "corporate" },
+  { image: memory06, width: 666, height: 549, country: "Thailand", note: "Group tour", audience: "personal" },
+  { image: memory07, width: 752, height: 995, note: "Corporate incentive tour", audience: "corporate" },
+  { image: memory08, width: 807, height: 606, note: "Leisure tour", audience: "personal" },
 ];
 
 /* ── Personal Travels / Corporate & Business ────────────────────────────────

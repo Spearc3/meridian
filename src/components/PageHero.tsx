@@ -14,6 +14,8 @@ export default function PageHero({ image, eyebrow, title, intro, children }: Pro
       <img
         src={image}
         alt=""
+        fetchPriority="high"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover"
       />
       {/* Two scrims: top-to-bottom settles the photo into the page; the

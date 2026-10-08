@@ -3,6 +3,9 @@ import * as THREE from "three";
 import earthMap from "../assets/earth_atmos_2048.jpg";
 import earthNormal from "../assets/earth_normal_2048.jpg";
 import earthSpecular from "../assets/earth_specular_2048.jpg";
+import earthMapSmall from "../assets/earth_atmos_1024.jpg";
+import earthNormalSmall from "../assets/earth_normal_1024.jpg";
+import earthSpecularSmall from "../assets/earth_specular_1024.jpg";
 import earthClouds from "../assets/earth_clouds_1024.png";
 import { regions } from "../tpl";
 
@@ -93,8 +96,12 @@ export default function Globe() {
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
     camera.position.z = 5.4;
 
+    // Touch devices get a 1.5x buffer: on a ~350px phone globe that is already
+    // sharper than the eye resolves, at roughly half the fill cost of 2-3x.
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const pixelRatio = Math.min(window.devicePixelRatio, coarse ? 1.5 : 2);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(pixelRatio);
     // The Blue Marble map is already low-key; tone mapping only crushes it further.
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -110,18 +117,22 @@ export default function Globe() {
     earth.rotation.z = (23.4 * Math.PI) / 180;
     world.add(earth);
 
+    // Half of the map wraps the visible hemisphere, so a globe drawn at up to
+    // ~640 device px shows no difference between the 1024 and 2048 textures —
+    // the smaller set is a fifth of the download and GPU upload.
+    const small = mount.clientWidth * pixelRatio <= 640;
     const loader = new THREE.TextureLoader();
-    const color = loader.load(earthMap);
+    const color = loader.load(small ? earthMapSmall : earthMap);
     color.colorSpace = THREE.SRGBColorSpace;
     const clouds = loader.load(earthClouds);
     clouds.colorSpace = THREE.SRGBColorSpace;
 
-    const oceanMask = loader.load(earthSpecular);
+    const oceanMask = loader.load(small ? earthSpecularSmall : earthSpecular);
     const waveUniforms = { uTime: { value: 0 }, uOceanMask: { value: oceanMask } };
 
     const surfaceMaterial = new THREE.MeshPhongMaterial({
       map: color,
-      normalMap: loader.load(earthNormal),
+      normalMap: loader.load(small ? earthNormalSmall : earthNormal),
       normalScale: new THREE.Vector2(0.85, 0.85),
       specularMap: oceanMask,
       // Kept very dark: any more and the sea turns into silver foil.
@@ -269,6 +280,9 @@ export default function Globe() {
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
     let pointerInside = false;
+    // Hit-testing 36 markers is only needed when the pointer has moved; after a
+    // tap on a touch screen the pointer otherwise "stays inside" indefinitely.
+    let pointerMoved = false;
 
     let dragging = false;
     let lastX = 0;
@@ -276,11 +290,23 @@ export default function Globe() {
     let velocity = 0.0016;
     let tiltVelocity = 0;
 
+    // Any touch, drag or hover holds the globe still so pins can be read; it
+    // picks its slow spin back up after RESUME_MS without interaction.
+    const DRIFT = 0.0016;
+    const RESUME_MS = 5000;
+    let lastInteraction = -Infinity;
+    let drift = 1; // 0 = held still, 1 = idle spin (eased, never snaps)
+    const touched = () => {
+      lastInteraction = performance.now();
+    };
+
     const onPointerMove = (e: PointerEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       pointerInside = true;
+      pointerMoved = true;
+      touched();
 
       if (dragging) {
         velocity = (e.clientX - lastX) * 0.00035;
@@ -297,6 +323,7 @@ export default function Globe() {
     };
 
     const onPointerDown = (e: PointerEvent) => {
+      touched();
       dragging = true;
       lastX = e.clientX;
       lastY = e.clientY;
@@ -304,6 +331,7 @@ export default function Globe() {
     };
 
     const onPointerUp = () => {
+      touched();
       dragging = false;
     };
 
@@ -332,14 +360,31 @@ export default function Globe() {
 
     const clock = new THREE.Clock();
     let frame = 0;
+    // Only animate while the globe is on screen: off screen it would keep the
+    // GPU busy (and the phone warm) for nothing. Time keeps flowing from the
+    // clock, so the swell and pulses resume in step.
+    let onScreen = true;
+    const visibility = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen && !frame) frame = requestAnimationFrame(tick);
+    });
+    visibility.observe(mount);
 
     const tick = () => {
+      if (!onScreen) {
+        frame = 0;
+        return;
+      }
       frame = requestAnimationFrame(tick);
       const t = clock.getElapsedTime();
 
+      const idle = performance.now() - lastInteraction > RESUME_MS;
+      drift += ((idle ? 1 : 0) - drift) * (idle ? 0.02 : 0.12);
+
       if (!dragging) {
-        // Ease back to the idle drift after a drag.
-        velocity += (0.0016 - velocity) * 0.02;
+        // Held: a flick's momentum dies out quickly and the globe settles.
+        // Idle again: it eases back up to the slow drift.
+        velocity += (DRIFT * drift - velocity) * (idle ? 0.02 : 0.08);
         tiltVelocity *= 0.94;
         world.rotation.y += velocity;
         world.rotation.x = THREE.MathUtils.clamp(
@@ -352,7 +397,7 @@ export default function Globe() {
       waveUniforms.uTime.value = t;
 
       // Clouds drift a touch faster than the surface.
-      cloudLayer.rotation.y += 0.0004;
+      cloudLayer.rotation.y += 0.0004 * drift;
 
       markers.children.forEach((child) => {
         if (child.userData.halo) {
@@ -362,7 +407,8 @@ export default function Globe() {
         }
       });
 
-      if (pointerInside && !dragging) {
+      if (pointerInside && pointerMoved && !dragging) {
+        pointerMoved = false;
         raycaster.setFromCamera(pointer, camera);
         const hits = raycaster.intersectObjects(
           markers.children.filter((c) => !c.userData.halo),
@@ -387,6 +433,7 @@ export default function Globe() {
 
     return () => {
       cancelAnimationFrame(frame);
+      visibility.disconnect();
       resizeObserver.disconnect();
       renderer.domElement.removeEventListener("pointermove", onPointerMove);
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);

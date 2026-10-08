@@ -6,6 +6,10 @@
 const IDLE_MS = 900;
 
 export function installFloatingScrollbar() {
+  // Touch screens draw their own overlay scrollbars, so there is nothing to
+  // fade — skip the per-scroll class toggling (and the style recalculation it
+  // triggers) on phones and tablets.
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
   const root = document.documentElement;
   let timer = 0;
   document.addEventListener(

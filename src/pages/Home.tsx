@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import Reveal from "../components/Reveal";
 import ServiceIcon from "../components/ServiceIcon";
-import Globe from "../components/Globe";
-import HeroWaves from "../components/HeroWaves";
+// three.js is the bulk of the site's JavaScript and only this page uses it:
+// split it out so other pages never download it, and so the hero copy paints
+// before the WebGL scenes are parsed.
+const Globe = lazy(() => import("../components/Globe"));
+const HeroWaves = lazy(() => import("../components/HeroWaves"));
 import MemoryWall from "../components/MemoryWall";
 import personalImage from "../assets/tpl-memory-03.jpg";
 import corporateImage from "../assets/tpl-memory-05.jpg";
@@ -72,31 +75,47 @@ const principles = [
 ];
 
 export default function Home() {
-  const [offset, setOffset] = useState(0);
+  const layerRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
 
+  // Parallax + fade on scroll, written straight to the two elements once per
+  // frame. Routing scrollY through React state re-rendered the entire page on
+  // every scroll event, which is what made scrolling stutter on phones.
   useEffect(() => {
-    const onScroll = () => setOffset(window.scrollY);
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const y = window.scrollY;
+      if (layerRef.current) layerRef.current.style.transform = `translate3d(0, ${y * 0.35}px, 0)`;
+      if (copyRef.current) copyRef.current.style.opacity = String(Math.max(0, 1 - y / 500));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    apply();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   return (
     <>
       {/* Hero */}
       <section className="relative h-[100svh] w-full overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{ transform: `translateY(${offset * 0.35}px)` }}
-        >
-          <HeroWaves />
+        <div ref={layerRef} className="absolute inset-0 will-change-transform">
+          <Suspense fallback={null}>
+            <HeroWaves />
+          </Suspense>
           <div className="absolute inset-0 bg-gradient-to-b from-abyss/60 via-abyss/40 to-abyss" />
           {/* Left-weighted scrim under the copy column only. */}
           <div className="absolute inset-0 bg-gradient-to-r from-abyss/85 via-abyss/40 to-transparent" />
         </div>
 
         <div
-          className="text-legible container-editorial relative z-10 flex h-full flex-col justify-end pb-24"
-          style={{ opacity: Math.max(0, 1 - offset / 500) }}
+          ref={copyRef}
+          className="text-legible container-editorial relative z-10 flex h-full flex-col justify-end pb-24 will-change-[opacity]"
         >
           <p className="eyebrow animate-reveal">
             {company.name} · Colombo, Sri Lanka
@@ -194,7 +213,9 @@ export default function Home() {
           <div className="relative aspect-square w-full">
             <div className="absolute inset-0 rounded-full bg-primary/10 blur-3xl" />
             <div className="relative h-full w-full">
-              <Globe />
+              <Suspense fallback={null}>
+                <Globe />
+              </Suspense>
             </div>
           </div>
         </div>

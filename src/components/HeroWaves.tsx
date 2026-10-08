@@ -23,8 +23,13 @@ export default function HeroWaves() {
     // Orthographic + a unit quad: the shader owns the framing, not the camera.
     const camera = new THREE.OrthographicCamera(-0.5, 0.5, 0.5, -0.5, 0, 1);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // One full-bleed quad has no geometry edges for MSAA to smooth, so it is
+    // off. The photo is 1920x1280; on a phone, cover-cropping already upsamples
+    // it past 1.5 device px per CSS px, so a larger buffer adds fill cost and
+    // no detail.
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const renderer = new THREE.WebGLRenderer({ antialias: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.5 : 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     mount.appendChild(renderer.domElement);
 
@@ -140,6 +145,7 @@ export default function HeroWaves() {
       renderer.domElement.style.display = "block";
 
       const image = texture.image as HTMLImageElement | undefined;
+      if (reduceMotion) requestAnimationFrame(() => renderer.render(scene, camera));
       if (image?.width) {
         const imageAspect = image.width / image.height;
         const viewAspect = clientWidth / clientHeight;
@@ -169,16 +175,31 @@ export default function HeroWaves() {
 
     const clock = new THREE.Clock();
     let frame = 0;
+    // Animate only while the hero is on screen; scrolled past, the loop parks.
+    let onScreen = true;
 
     const tick = () => {
-      frame = requestAnimationFrame(tick);
+      if (!onScreen) {
+        frame = 0;
+        return;
+      }
       uniforms.uTime.value = reduceMotion ? 0 : clock.getElapsedTime();
       renderer.render(scene, camera);
+      // A still frame needs no loop; resizes and the texture landing re-render
+      // it below.
+      frame = reduceMotion ? 0 : requestAnimationFrame(tick);
     };
+
+    const visibility = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen && !frame) tick();
+    });
+    visibility.observe(mount);
     tick();
 
     return () => {
       cancelAnimationFrame(frame);
+      visibility.disconnect();
       window.clearInterval(settle);
       resizeObserver.disconnect();
       texture.dispose();

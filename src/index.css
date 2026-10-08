@@ -96,20 +96,30 @@ html {
 }
 
 body {
-  background-color: var(--color-abyss);
+  /* No background of its own: html paints the abyss, and the glow below sits
+     between the two. (A body background would paint over a z-index:-1 layer.) */
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100svh;
+}
+
+/* The glow tracks the viewport rather than the (very long) document, so it
+   stays a glow at the top instead of being stretched down the whole page. It
+   lives on its own fixed layer rather than as background-attachment: fixed,
+   which repaints the whole viewport on every scroll frame (Chrome on Android)
+   and is ignored outright by iOS Safari. A fixed layer is just composited. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image: radial-gradient(
     ellipse at top,
     oklch(24% 0.06 235) 0%,
     var(--color-abyss) 60%
   );
-  background-repeat: no-repeat;
-  /* The gradient tracks the viewport rather than the (very long) document, so it
-     stays a glow at the top instead of being stretched down the whole page. */
-  background-attachment: fixed;
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  min-height: 100svh;
 }
 
 ::selection {
@@ -131,13 +141,19 @@ body {
     --scroll-thumb: rgb(214 228 238 / 0.38);
   }
 
-  * {
+  /* Only the elements that actually scroll carry the fade. A transition on *
+     made every element on the page restart a transition each time scrolling
+     started or stopped. */
+  html,
+  .overlay-scroll,
+  textarea {
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
     transition: scrollbar-color 0.35s ease;
   }
   html.is-scrolling,
-  html.is-scrolling *,
+  html.is-scrolling .overlay-scroll,
+  html.is-scrolling textarea,
   .overlay-scroll:hover {
     scrollbar-color: var(--scroll-thumb) transparent;
   }
@@ -166,7 +182,9 @@ body {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    * {
+    html,
+    .overlay-scroll,
+    textarea {
       transition: none;
     }
   }

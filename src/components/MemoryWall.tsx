@@ -14,9 +14,12 @@ export default function MemoryWall({ items }: { items: Memory[] }) {
             <div className="relative overflow-hidden bg-secondary">
               <img
                 src={memory.image}
+                width={memory.width}
+                height={memory.height}
+                decoding="async"
                 alt={`Client group on a ${memory.note.toLowerCase()}${memory.country ? ` in ${memory.country}` : ""}`}
                 loading="lazy"
-                className="w-full transition-transform duration-[1200ms] group-hover:scale-105"
+                className="h-auto w-full transition-transform duration-[1200ms] group-hover:scale-105"
               />
               <div className="scrim-up absolute inset-x-0 bottom-0 h-3/5" />
               <figcaption className="text-legible absolute inset-x-0 bottom-0 p-5">
