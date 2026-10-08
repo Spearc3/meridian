@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- The header logo mark: a serif M inside a hairline square, surf on abyss. -->
-  <rect width="64" height="64" fill="#0c2340"/>
-  <rect x="9" y="9" width="46" height="46" fill="none" stroke="#a6e3e9" stroke-width="2.5" opacity="0.85"/>
-  <text x="32" y="45"
-        font-family="Cormorant Garamond, Cormorant, Georgia, 'Times New Roman', serif"
-        font-size="36" fill="#a6e3e9" text-anchor="middle">M</text>
-</svg>
