@@ -102,6 +102,13 @@ export default function Globe() {
     const pixelRatio = Math.min(window.devicePixelRatio, coarse ? 1.5 : 2);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(pixelRatio);
+    // ~350px across on a phone: 64 segments are as round as 96 there, at under
+    // half the vertices per frame for the surface and cloud shells.
+    const segments = coarse ? 64 : 96;
+    // Horizontal drags spin the globe; vertical swipes still scroll the page.
+    // Without this the browser claims the gesture mid-drag to scroll, which is
+    // what made touch rotation stall and jump.
+    renderer.domElement.style.touchAction = "pan-y";
     // The Blue Marble map is already low-key; tone mapping only crushes it further.
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -182,13 +189,13 @@ export default function Globe() {
     };
 
     const surface = new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS, 96, 96),
+      new THREE.SphereGeometry(RADIUS, segments, segments),
       surfaceMaterial,
     );
     earth.add(surface);
 
     const cloudLayer = new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS * 1.012, 96, 96),
+      new THREE.SphereGeometry(RADIUS * 1.012, segments, segments),
       new THREE.MeshPhongMaterial({
         map: clouds,
         transparent: true,
@@ -300,6 +307,18 @@ export default function Globe() {
       lastInteraction = performance.now();
     };
 
+    // Drag input is collected here and applied once per frame in tick(), so
+    // touch screens (which can fire pointermove faster or slower than the
+    // display) rotate in even steps. Flick speed is a smoothed px/ms average
+    // over recent moves, not the last single event, so the coast is even too.
+    const ROTATE_PER_PX = 0.005;
+    let activePointer: number | null = null;
+    let pendingX = 0;
+    let pendingY = 0;
+    let dragVX = 0;
+    let dragVY = 0;
+    let lastMoveTime = 0;
+
     const onPointerMove = (e: PointerEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -308,31 +327,47 @@ export default function Globe() {
       pointerMoved = true;
       touched();
 
-      if (dragging) {
-        velocity = (e.clientX - lastX) * 0.00035;
-        tiltVelocity = (e.clientY - lastY) * 0.00035;
-        world.rotation.y += (e.clientX - lastX) * 0.005;
-        world.rotation.x = THREE.MathUtils.clamp(
-          world.rotation.x + (e.clientY - lastY) * 0.005,
-          -0.9,
-          0.9,
-        );
+      if (dragging && e.pointerId === activePointer) {
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+        pendingX += dx;
+        pendingY += dy;
+        const dt = Math.max(1, e.timeStamp - lastMoveTime);
+        dragVX = dragVX * 0.7 + (dx / dt) * 0.3;
+        dragVY = dragVY * 0.7 + (dy / dt) * 0.3;
         lastX = e.clientX;
         lastY = e.clientY;
+        lastMoveTime = e.timeStamp;
       }
     };
 
     const onPointerDown = (e: PointerEvent) => {
       touched();
+      // One finger drives; a second one doesn't hijack the drag.
+      if (activePointer !== null) return;
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      activePointer = e.pointerId;
       dragging = true;
       lastX = e.clientX;
       lastY = e.clientY;
+      lastMoveTime = e.timeStamp;
+      dragVX = dragVY = 0;
+      velocity = tiltVelocity = 0;
       renderer.domElement.setPointerCapture(e.pointerId);
     };
 
-    const onPointerUp = () => {
+    // Up, cancel (the browser took the gesture to scroll) or lost capture all
+    // end the drag the same way, so it can never get stuck "held".
+    const onPointerUp = (e: PointerEvent) => {
       touched();
+      if (e.pointerId !== activePointer) return;
+      activePointer = null;
       dragging = false;
+      // Only a release that is still moving carries momentum (~7% of drag
+      // speed, per frame); lifting a resting finger just stops.
+      const moving = e.timeStamp - lastMoveTime < 80;
+      velocity = moving ? dragVX * 16.7 * 0.00035 : 0;
+      tiltVelocity = moving ? dragVY * 16.7 * 0.00035 : 0;
     };
 
     const onPointerLeave = () => {
@@ -343,6 +378,8 @@ export default function Globe() {
     renderer.domElement.addEventListener("pointermove", onPointerMove);
     renderer.domElement.addEventListener("pointerdown", onPointerDown);
     renderer.domElement.addEventListener("pointerup", onPointerUp);
+    renderer.domElement.addEventListener("pointercancel", onPointerUp);
+    renderer.domElement.addEventListener("lostpointercapture", onPointerUp);
     renderer.domElement.addEventListener("pointerleave", onPointerLeave);
 
     const resize = () => {
@@ -377,6 +414,17 @@ export default function Globe() {
       }
       frame = requestAnimationFrame(tick);
       const t = clock.getElapsedTime();
+
+      // Apply this frame's share of the drag.
+      if (pendingX || pendingY) {
+        world.rotation.y += pendingX * ROTATE_PER_PX;
+        world.rotation.x = THREE.MathUtils.clamp(
+          world.rotation.x + pendingY * ROTATE_PER_PX,
+          -0.9,
+          0.9,
+        );
+        pendingX = pendingY = 0;
+      }
 
       const idle = performance.now() - lastInteraction > RESUME_MS;
       drift += ((idle ? 1 : 0) - drift) * (idle ? 0.02 : 0.12);
@@ -438,6 +486,8 @@ export default function Globe() {
       renderer.domElement.removeEventListener("pointermove", onPointerMove);
       renderer.domElement.removeEventListener("pointerdown", onPointerDown);
       renderer.domElement.removeEventListener("pointerup", onPointerUp);
+      renderer.domElement.removeEventListener("pointercancel", onPointerUp);
+      renderer.domElement.removeEventListener("lostpointercapture", onPointerUp);
       renderer.domElement.removeEventListener("pointerleave", onPointerLeave);
       renderer.dispose();
       mount.removeChild(renderer.domElement);
@@ -446,7 +496,7 @@ export default function Globe() {
 
   return (
     <div className="relative h-full w-full">
-      <div ref={mountRef} className="h-full w-full cursor-grab" />
+      <div ref={mountRef} className="h-full w-full cursor-grab select-none" />
       {hovered && (
         <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 border border-primary/50 bg-abyss/80 px-4 py-2 text-center backdrop-blur">
           <p className="text-display text-xl text-primary">{hovered.name}</p>
