@@ -1,16 +1,16 @@
 import Reveal from "../components/Reveal";
+import ServiceIcon from "../components/ServiceIcon";
 import PageHero from "../components/PageHero";
 import ServiceGrid from "../components/ServiceGrid";
 import MemoryWall from "../components/MemoryWall";
 import Process from "../components/Process";
 import EnquiryForm from "../components/EnquiryForm";
-import hero from "../assets/tpl-cappadocia.jpg";
+import hero from "../assets/tpl-memory-02.jpg";
 import {
   essentials,
   memories,
   personalEnquiry,
   personalServices,
-  regions,
 } from "../tpl";
 
 export default function PersonalTravel() {
@@ -49,29 +49,6 @@ export default function PersonalTravel() {
       </section>
 
       {/* Where we take you */}
-      <section className="container-editorial py-24">
-        <Reveal>
-          <p className="eyebrow">Where we take you</p>
-          <h2 className="text-display mt-4 max-w-3xl text-5xl md:text-6xl">
-            Seven regions, one travel desk.
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid grid-cols-2 gap-x-8 gap-y-10 border-t border-border/50 pt-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
-          {regions.map((region, i) => (
-            <Reveal key={region.name} delay={(i % 4) * 0.06}>
-              <h3 className="text-display text-2xl leading-tight text-primary">
-                {region.name}
-              </h3>
-              <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
-                {region.places.map((place) => (
-                  <li key={place}>{place}</li>
-                ))}
-              </ul>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
       {/* Essentials */}
       <section className="container-editorial py-24">
         <Reveal>
@@ -80,7 +57,8 @@ export default function PersonalTravel() {
             <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {essentials.map((item) => (
                 <div key={item.title}>
-                  <h3 className="text-display text-2xl">{item.title}</h3>
+                  <ServiceIcon name={item.icon} size={48} />
+                  <h3 className="text-display mt-5 text-2xl">{item.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
                     {item.detail}
                   </p>

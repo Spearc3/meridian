@@ -7,16 +7,17 @@ import type { EnquiryField } from "./components/EnquiryForm";
 
 import harsha from "./assets/tpl-harsha.jpg";
 import sameera from "./assets/tpl-sameera.jpg";
-import hashani from "./assets/tpl-hashani.jpg";
 
-import shanghaiGarden from "./assets/tpl-shanghai-garden.jpg";
-import shanghaiSnow from "./assets/tpl-shanghai-snow.jpg";
-import cappadocia from "./assets/tpl-cappadocia.jpg";
-import vietnamNight from "./assets/tpl-vietnam-night.jpg";
-import halongCruise from "./assets/tpl-halong-cruise.jpg";
-import hcmcPalace from "./assets/tpl-hcmc-palace.jpg";
-import phuket from "./assets/tpl-phuket.jpg";
-import bangkokSkywalk from "./assets/tpl-bangkok-skywalk.jpg";
+// "Memories we created" photographs, taken from the deck's closing pages.
+// Neutral file names: the deck's text doesn't name where each was taken.
+import memory01 from "./assets/tpl-memory-01.jpg";
+import memory02 from "./assets/tpl-memory-02.jpg";
+import memory03 from "./assets/tpl-memory-03.jpg";
+import memory04 from "./assets/tpl-memory-04.jpg";
+import memory05 from "./assets/tpl-memory-05.jpg";
+import memory06 from "./assets/tpl-memory-06.jpg";
+import memory07 from "./assets/tpl-memory-07.jpg";
+import memory08 from "./assets/tpl-memory-08.jpg";
 
 export const company = {
   name: "Travel Port Leisure",
@@ -50,19 +51,21 @@ export const visionMission = [
 /** The four promises running along the foot of the vision & mission page. */
 export const pillars = [
   {
+    icon: "corporate",
     title: "Corporate Travel",
     detail: "Smart solutions for modern businesses.",
   },
-  { title: "MICE & Incentives", detail: "Engaging events. Lasting impact." },
-  { title: "Leisure Travel", detail: "Curated holidays. Cherished memories." },
+  { icon: "mice", title: "MICE & Incentives", detail: "Engaging events. Lasting impact." },
+  { icon: "location", title: "Leisure Travel", detail: "Curated holidays. Cherished memories." },
   {
+    icon: "globe",
     title: "Global Connections",
     detail: "Strong partnerships. Wider possibilities.",
   },
 ];
 
 export type Solution = {
-  /** Key into the icon map in Home.tsx — lucide components can't live in a .ts file. */
+  /** Basename of an icon in src/assets/icons — the client's two-tone set. */
   icon: string;
   title: string;
   detail: string;
@@ -77,43 +80,43 @@ export const solutions: Solution[] = [
       "Reward and motivate teams with expertly curated incentive travel experiences.",
   },
   {
-    icon: "armchair",
+    icon: "lounge",
     title: "Airport Lounge Facilities",
     detail:
       "Premium lounge access for comfort, convenience and productivity while traveling.",
   },
   {
-    icon: "users",
+    icon: "group",
     title: "Group Travel & Leisure Tours",
     detail:
       "Customized group journeys designed for memorable leisure and team experiences.",
   },
   {
-    icon: "ship",
+    icon: "cruise",
     title: "Cruise Bookings",
     detail:
       "Exclusive cruise vacations with leading global cruise partners.",
   },
   {
-    icon: "building",
+    icon: "hotel",
     title: "Hotel Reservations & Ground Handling",
     detail:
       "Worldwide accommodation, transfers and destination support services.",
   },
   {
-    icon: "id",
+    icon: "visa",
     title: "Visa Consultation for All Destinations",
     detail:
       "Professional visa guidance and documentation support for hassle-free travel.",
   },
   {
-    icon: "car",
+    icon: "chauffeur",
     title: "Chauffeur Services",
     detail:
       "Reliable executive transportation solutions for business and leisure travelers.",
   },
   {
-    icon: "shield",
+    icon: "insurance",
     title: "Travel Insurance",
     detail:
       "Comprehensive protection and peace of mind throughout your journey.",
@@ -123,29 +126,29 @@ export const solutions: Solution[] = [
 /** "Our Core Services". */
 export const coreServices: Solution[] = [
   {
-    icon: "globe",
+    icon: "air",
     title: "Global Aviation Solutions",
     detail: "International and domestic ticketing with optimized routing.",
   },
   {
-    icon: "headphones",
+    icon: "support",
     title: "Comprehensive Support",
     detail:
       "Visa consultations for all destinations, travel insurance, airport lounge access, and chauffeur services.",
   },
   {
-    icon: "users",
+    icon: "mice",
     title: "MICE & Incentives",
     detail:
       "Specialist handling of large-scale conferences and reward tours.",
   },
   {
-    icon: "briefcase",
+    icon: "corporate",
     title: "Corporate Travel Management",
     detail: "End-to-end management for executive teams.",
   },
   {
-    icon: "gem",
+    icon: "diamond",
     title: "Luxury & FIT Travel",
     detail:
       "Tailor-made itineraries for discerning individuals, and customized travel experiences.",
@@ -164,12 +167,6 @@ export const leadership = [
     role: "Director / CEO",
     note: "25 years' experience in the travel industry",
     image: sameera,
-  },
-  {
-    name: "Hashani Herath",
-    role: "Head of Operations",
-    note: "14 years' experience in the aviation and travel industry",
-    image: hashani,
   },
 ];
 
@@ -204,12 +201,12 @@ export const regions = [
 
 const destinationCount = regions.reduce((n, r) => n + r.places.length, 0);
 
-/** Figures drawn from the deck: the regional-coverage list and "nearly a century
- *  of combined expertise". */
+/** Figures drawn from the deck: the regional-coverage list, and the CEO's
+ *  25 years in the travel industry. */
 export const headlineStats = [
   { value: String(regions.length), label: "Regions covered" },
-  { value: String(destinationCount), label: "Destinations served" },
-  { value: "≈100y", label: "Combined expertise" },
+  { value: `${destinationCount}+`, label: "Destinations" },
+  { value: "25+", label: "Years industry expertise" },
 ];
 
 /** "Our global reach includes" — the eight capability chips on the network page. */
@@ -227,26 +224,24 @@ export const globalReach = [
 /** "Memories we created …" — photographs from the deck's closing pages. */
 export type Memory = {
   image: string;
-  caption: string;
+  /** Only set where the deck's coverage list names the country and the
+   *  photograph is unmistakably there; otherwise the wall shows a neutral title. */
+  country?: string;
+  /** The kind of tour, in the deck's own service vocabulary. */
   note: string;
   /** Which page the photograph belongs on besides Home. */
   audience: "corporate" | "personal";
 };
 
 export const memories: Memory[] = [
-  { image: shanghaiSnow, caption: "Shanghai, China", note: "Dealer tour", audience: "corporate" },
-  { image: cappadocia, caption: "Cappadocia, Türkiye", note: "Incentive tour", audience: "corporate" },
-  { image: halongCruise, caption: "Ha Long Bay, Vietnam", note: "Group cruise", audience: "personal" },
-  { image: phuket, caption: "Phuket, Thailand", note: "Group tour", audience: "personal" },
-  { image: shanghaiGarden, caption: "Shanghai, China", note: "Yu Garden", audience: "corporate" },
-  { image: bangkokSkywalk, caption: "Bangkok, Thailand", note: "SkyWalk", audience: "personal" },
-  { image: vietnamNight, caption: "Vietnam, after dark", note: "Incentive tour", audience: "corporate" },
-  { image: hcmcPalace, caption: "Ho Chi Minh City, Vietnam", note: "Leisure group", audience: "personal" },
-];
-
-export const globalPartners = [
-  { country: "France", name: "Shan Fernando", phone: "+33 7 43 30 33 11" },
-  { country: "Netherlands", name: "Randev Edirisinghe", phone: "+31 6 19086553" },
+  { image: memory01, country: "China", note: "Corporate incentive tour", audience: "corporate" },
+  { image: memory02, note: "Corporate incentive tour", audience: "corporate" },
+  { image: memory03, note: "Cruise", audience: "personal" },
+  { image: memory04, country: "Thailand", note: "Group tour", audience: "personal" },
+  { image: memory05, country: "China", note: "Group tour", audience: "corporate" },
+  { image: memory06, country: "Thailand", note: "Group tour", audience: "personal" },
+  { image: memory07, note: "Corporate incentive tour", audience: "corporate" },
+  { image: memory08, note: "Leisure tour", audience: "personal" },
 ];
 
 /* ── Personal Travels / Corporate & Business ────────────────────────────────
@@ -255,34 +250,34 @@ export const globalPartners = [
 
 export const personalServices: Solution[] = [
   {
-    icon: "palm",
+    icon: "location",
     title: "Leisure Travel",
     detail: "Curated holidays. Cherished memories.",
   },
   {
-    icon: "gem",
+    icon: "diamond",
     title: "Luxury & FIT Travel",
     detail:
       "Tailor-made itineraries for discerning individuals, and customized travel experiences.",
   },
   {
-    icon: "users",
+    icon: "group",
     title: "Group Travel & Leisure Tours",
     detail:
       "Customized group journeys designed for memorable leisure and team experiences.",
   },
   {
-    icon: "ship",
+    icon: "cruise",
     title: "Cruise Bookings",
     detail: "Exclusive cruise vacations with leading global cruise partners.",
   },
   {
-    icon: "plane",
-    title: "Air Ticketing",
+    icon: "air",
+    title: "International Air Travel Solutions",
     detail: "International and domestic ticketing with optimized routing.",
   },
   {
-    icon: "building",
+    icon: "hotel",
     title: "Hotel Reservations & Ground Handling",
     detail:
       "Worldwide accommodation, transfers and destination support services.",
@@ -292,25 +287,25 @@ export const personalServices: Solution[] = [
 /** Travel essentials that apply to both audiences. */
 export const essentials: Solution[] = [
   {
-    icon: "id",
+    icon: "visa",
     title: "Visa Consultation",
     detail:
       "Professional visa guidance and documentation support for all destinations.",
   },
   {
-    icon: "shield",
+    icon: "insurance",
     title: "Travel Insurance",
     detail:
       "Comprehensive protection and peace of mind throughout your journey.",
   },
   {
-    icon: "armchair",
+    icon: "lounge",
     title: "Airport Lounge Access",
     detail:
       "Premium lounge access for comfort, convenience and productivity while traveling.",
   },
   {
-    icon: "car",
+    icon: "chauffeur",
     title: "Chauffeur Services",
     detail:
       "Reliable executive transportation solutions for business and leisure travelers.",
@@ -319,17 +314,17 @@ export const essentials: Solution[] = [
 
 export const corporateServices: Solution[] = [
   {
-    icon: "briefcase",
+    icon: "corporate",
     title: "Corporate Travel Management",
     detail: "End-to-end management for executive teams.",
   },
   {
-    icon: "globe",
+    icon: "air",
     title: "Global Aviation Solutions",
     detail: "International and domestic ticketing with optimized routing.",
   },
   {
-    icon: "presentation",
+    icon: "mice",
     title: "MICE",
     detail:
       "Meetings, Incentives, Conferences & Exhibitions — specialist handling of large-scale conferences and reward tours.",
@@ -341,13 +336,13 @@ export const corporateServices: Solution[] = [
       "Reward and motivate teams with expertly curated incentive travel experiences.",
   },
   {
-    icon: "users",
-    title: "Dealer & Partner Tours",
+    icon: "group",
+    title: "Group Travel & Leisure Tours",
     detail:
-      "Group journeys for dealer networks and business partners — from Shanghai to Ho Chi Minh City.",
+      "Customized group journeys designed for memorable leisure and team experiences.",
   },
   {
-    icon: "building",
+    icon: "hotel",
     title: "Hotel Reservations & Ground Handling",
     detail:
       "Worldwide accommodation, transfers and destination support services.",
@@ -371,7 +366,7 @@ export const process = [
   },
   {
     title: "You travel",
-    detail: "With our team and global partners behind every journey.",
+    detail: "With our team and agents around the globe behind every journey.",
   },
 ];
 
@@ -410,13 +405,13 @@ export const corporateEnquiry: EnquiryField[] = [
     options: [
       "Corporate travel management",
       "MICE / conference / event",
-      "Incentive or dealer tour",
+      "Corporate incentive tour",
       "Air ticketing",
       "Visa, insurance, lounge or chauffeur",
     ],
   },
   { key: "size", label: "Number of travellers", placeholder: "40 pax" },
-  { key: "where", label: "Destination", placeholder: "Vietnam, Dubai, Shanghai…" },
+  { key: "where", label: "Destination", placeholder: "Singapore, UAE, Europe…" },
   { key: "when", label: "Dates", placeholder: "Q1 2027, 5 days" },
   { key: "notes", label: "The brief", type: "textarea", placeholder: "Occasion, budget, programme, anything the itinerary has to work around…" },
 ];

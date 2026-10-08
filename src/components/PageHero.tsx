@@ -16,8 +16,12 @@ export default function PageHero({ image, eyebrow, title, intro, children }: Pro
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-abyss/70 via-abyss/50 to-abyss" />
-      <div className="container-editorial relative z-10 pb-16">
+      {/* Two scrims: top-to-bottom settles the photo into the page; the
+          left-weighted one sits under the copy column only, so the type
+          reads on any photograph while the right side stays vivid. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-abyss/70 via-abyss/60 to-abyss" />
+      <div className="absolute inset-0 bg-gradient-to-r from-abyss/90 via-abyss/55 to-abyss/10" />
+      <div className="text-legible container-editorial relative z-10 pb-16">
         <p className="eyebrow animate-reveal">{eyebrow}</p>
         <h1
           className="text-display mt-6 text-5xl leading-[0.9] animate-reveal sm:text-7xl md:text-8xl"

@@ -1,50 +1,35 @@
-import type { ComponentType } from "react";
-import {
-  Armchair,
-  Briefcase,
-  Building2,
-  Car,
-  Gem,
-  Gift,
-  Globe,
-  Headphones,
-  IdCard,
-  Ship,
-  ShieldCheck,
-  Users,
-  Plane,
-  Palmtree,
-  Presentation,
-} from "lucide-react";
-
-/** Keyed by the `icon` field on the service lists in `tpl.ts`, which — being a
-    plain .ts module — can't hold components itself. */
-const icons: Record<string, ComponentType<{ size?: number; className?: string }>> =
-  {
-    gift: Gift,
-    armchair: Armchair,
-    users: Users,
-    ship: Ship,
-    building: Building2,
-    id: IdCard,
-    car: Car,
-    shield: ShieldCheck,
-    globe: Globe,
-    headphones: Headphones,
-    briefcase: Briefcase,
-    gem: Gem,
-    plane: Plane,
-    palm: Palmtree,
-    presentation: Presentation,
-  };
+/** The client's two-tone icon set, in its light colourway (mist + aqua) for
+    this site's dark surfaces. Each is trimmed and optically sized on a square
+    canvas, so they line up at any size. Keyed by basename — the `icon` field
+    on the lists in `tpl.ts`, plus a few used directly (vision, email, …). */
+const icons = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>("../assets/icons/*.png", {
+      eager: true,
+      query: "?url",
+      import: "default",
+    }),
+  ).map(([path, url]) => [path.slice(path.lastIndexOf("/") + 1, -4), url]),
+);
 
 export default function ServiceIcon({
   name,
-  size = 20,
+  size = 44,
+  className = "",
 }: {
   name: string;
   size?: number;
+  className?: string;
 }) {
-  const Glyph = icons[name] ?? Globe;
-  return <Glyph size={size} className="text-primary" />;
+  return (
+    <img
+      src={icons[name] ?? icons.air}
+      width={size}
+      height={size}
+      alt=""
+      aria-hidden
+      decoding="async"
+      className={`block shrink-0 ${className}`}
+    />
+  );
 }

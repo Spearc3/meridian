@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Binoculars, Target } from "lucide-react";
 import Reveal from "../components/Reveal";
 import ServiceIcon from "../components/ServiceIcon";
 import hero from "../assets/hero-ocean.jpg";
@@ -31,13 +30,16 @@ export default function About() {
           <Reveal>
             <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50">
               {pillars.map((pillar) => (
-                <div key={pillar.title} className="bg-abyss p-6">
-                  <p className="text-xs uppercase tracking-[0.24em] text-primary">
-                    {pillar.title}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {pillar.detail}
-                  </p>
+                <div key={pillar.title} className="flex items-center gap-5 bg-abyss p-6">
+                  <ServiceIcon name={pillar.icon} size={44} />
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-primary">
+                      {pillar.title}
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {pillar.detail}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -53,8 +55,7 @@ export default function About() {
           <Reveal delay={0.24}>
             <p>
               Travel Port Leisure is the leisure arm of Base HP, operating out of
-              Narahenpita, Colombo, with partners on the ground in France and the
-              Netherlands.
+              Narahenpita, Colombo, with agents around the globe.
             </p>
           </Reveal>
         </div>
@@ -71,9 +72,7 @@ export default function About() {
           {visionMission.map((item, i) => (
             <Reveal key={item.label} delay={i * 0.1}>
               <div className="h-full border border-border/60 bg-secondary/30 p-10">
-                <span className="grid h-11 w-11 place-items-center border border-primary/50 text-primary">
-                  {i === 0 ? <Binoculars size={18} /> : <Target size={18} />}
-                </span>
+                <ServiceIcon name={i === 0 ? "vision" : "mission"} size={64} />
                 <h2 className="text-display mt-6 text-3xl">{item.label}</h2>
                 <p className="mt-4 leading-relaxed text-muted-foreground">
                   {item.body}
@@ -98,31 +97,29 @@ export default function About() {
           <Reveal delay={0.1}>
             <p className="max-w-sm text-muted-foreground">
               A visionary leadership driving excellence, innovation and
-              unforgettable journeys worldwide — nearly a century of combined
-              expertise at your travel desk.
+              unforgettable journeys worldwide.
             </p>
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50 lg:grid-cols-2">
           {leadership.map((person, i) => (
-            <Reveal key={person.name} delay={i * 0.1}>
-              <div className="group">
-                <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+            <Reveal key={person.name} delay={i * 0.1} className="h-full">
+              <div className="group flex h-full items-center gap-6 bg-abyss p-6 sm:gap-8 sm:p-8">
+                <div className="relative aspect-[4/5] w-28 shrink-0 overflow-hidden bg-secondary sm:w-40">
                   <img
                     src={person.image}
                     alt={person.name}
                     loading="lazy"
-                    className="h-full w-full object-cover object-top transition-transform duration-[1200ms] group-hover:scale-105"
+                    className="h-full w-full object-cover object-top"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-abyss/70 via-transparent to-transparent" />
                 </div>
-                <div className="mt-5 border-t border-border/50 pt-4">
-                  <h3 className="text-display text-3xl">{person.name}</h3>
-                  <p className="mt-1 text-xs uppercase tracking-[0.24em] text-primary">
+                <div className="min-w-0">
+                  <h3 className="text-display text-2xl sm:text-3xl">{person.name}</h3>
+                  <p className="mt-2 text-xs uppercase tracking-[0.24em] text-primary">
                     {person.role}
                   </p>
-                  <p className="mt-3 text-sm text-muted-foreground">
+                  <p className="mt-4 text-sm text-muted-foreground">
                     {person.note}
                   </p>
                 </div>
@@ -152,7 +149,7 @@ export default function About() {
           {coreServices.map((service, i) => (
             <Reveal key={service.title} delay={(i % 3) * 0.08}>
               <div className="h-full border border-border/60 bg-secondary/20 p-8">
-                <ServiceIcon name={service.icon} size={24} />
+                <ServiceIcon name={service.icon} size={56} />
                 <h3 className="text-display mt-5 text-2xl leading-tight">
                   {service.title}
                 </h3>

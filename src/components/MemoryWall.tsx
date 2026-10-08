@@ -14,13 +14,13 @@ export default function MemoryWall({ items }: { items: Memory[] }) {
             <div className="relative overflow-hidden bg-secondary">
               <img
                 src={memory.image}
-                alt={`${memory.note} — ${memory.caption}`}
+                alt={`Client group on a ${memory.note.toLowerCase()}${memory.country ? ` in ${memory.country}` : ""}`}
                 loading="lazy"
                 className="w-full transition-transform duration-[1200ms] group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-abyss/80 via-transparent to-transparent opacity-80" />
-              <figcaption className="absolute inset-x-0 bottom-0 p-5">
-                <p className="text-display text-2xl">{memory.caption}</p>
+              <div className="scrim-up absolute inset-x-0 bottom-0 h-3/5" />
+              <figcaption className="text-legible absolute inset-x-0 bottom-0 p-5">
+                <p className="text-display text-2xl">{memory.country ?? "With our clients"}</p>
                 <p className="mt-1 text-[10px] uppercase tracking-[0.24em] text-primary">
                   {memory.note}
                 </p>

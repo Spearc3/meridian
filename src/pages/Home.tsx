@@ -1,40 +1,73 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowDown, ArrowRight, Binoculars, Target } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import Reveal from "../components/Reveal";
+import ServiceIcon from "../components/ServiceIcon";
 import Globe from "../components/Globe";
 import HeroWaves from "../components/HeroWaves";
 import MemoryWall from "../components/MemoryWall";
-import Process from "../components/Process";
-import personalImage from "../assets/tpl-halong-cruise.jpg";
-import corporateImage from "../assets/tpl-shanghai-garden.jpg";
-import {
-  company,
-  globalReach,
-  headlineStats,
-  memories,
-  pillars,
-  regions,
-  visionMission,
-  whoWeAre,
-} from "../tpl";
+import personalImage from "../assets/tpl-memory-03.jpg";
+import corporateImage from "../assets/tpl-memory-05.jpg";
+import { company, headlineStats, memories, regions } from "../tpl";
 
-const doors = [
+/** What the desk can put to work on any plan, personal or corporate. */
+const readyToOffer = [
+  { icon: "air", label: "Air travel & ticketing" },
+  { icon: "hotel", label: "Hotels & ground handling" },
+  { icon: "visa", label: "Visa consultation" },
+  { icon: "insurance", label: "Travel insurance" },
+  { icon: "lounge", label: "Airport lounges" },
+  { icon: "chauffeur", label: "Chauffeur services" },
+];
+
+/** The two crafts — each a doorway to its own page. */
+const crafts = [
   {
     to: "/personal-travel",
     image: personalImage,
+    imageAlt: "A Travel Port Leisure group on holiday",
     eyebrow: "Personal Travels",
-    title: "Curated holidays. Cherished memories.",
-    detail: "Leisure, luxury and group journeys, cruises and tailor-made itineraries.",
-    cta: "Plan a holiday",
+    title: (
+      <>
+        The art of <em className="text-primary">the journey.</em>
+      </>
+    ),
+    body: "Leisure is personal. We shape every itinerary around how you like to travel — the pace, the places and the small details that turn a trip into a memory.",
+    tags: ["Leisure holidays", "Luxury & FIT", "Group tours", "Cruises"],
+    cta: "Explore personal travel",
   },
   {
     to: "/corporate",
     image: corporateImage,
+    imageAlt: "A corporate incentive group travelling with Travel Port Leisure",
     eyebrow: "Corporate & Business",
-    title: "Smart solutions for modern businesses.",
-    detail: "Corporate travel management, MICE, and incentive and dealer tours.",
-    cta: "Request a proposal",
+    title: (
+      <>
+        The discipline of <em className="text-primary">business travel.</em>
+      </>
+    ),
+    body: "Business travel runs on precision. We manage the moving parts — ticketing, accommodation, visas and ground transport — so your people arrive ready, and every conference and incentive tour reflects the standards of your organization.",
+    tags: ["Travel management", "MICE", "Incentive tours", "Global aviation"],
+    cta: "Explore corporate travel",
+  },
+];
+
+/** The deck's three promises, each with what stands behind it. */
+const principles = [
+  {
+    icon: "experience",
+    title: "Powered by experience",
+    body: "A team of veteran travel professionals, led by more than 25 years in the travel industry.",
+  },
+  {
+    icon: "excellence",
+    title: "Driven by excellence",
+    body: "Precision, efficiency and attention to detail — from a single ticket to a conference abroad.",
+  },
+  {
+    icon: "service",
+    title: "Focused on service",
+    body: "One travel desk for every part of the trip, with agents around the globe.",
   },
 ];
 
@@ -56,15 +89,17 @@ export default function Home() {
           style={{ transform: `translateY(${offset * 0.35}px)` }}
         >
           <HeroWaves />
-          <div className="absolute inset-0 bg-gradient-to-b from-abyss/60 via-abyss/30 to-abyss" />
+          <div className="absolute inset-0 bg-gradient-to-b from-abyss/60 via-abyss/40 to-abyss" />
+          {/* Left-weighted scrim under the copy column only. */}
+          <div className="absolute inset-0 bg-gradient-to-r from-abyss/85 via-abyss/40 to-transparent" />
         </div>
 
         <div
-          className="container-editorial relative z-10 flex h-full flex-col justify-end pb-24"
+          className="text-legible container-editorial relative z-10 flex h-full flex-col justify-end pb-24"
           style={{ opacity: Math.max(0, 1 - offset / 500) }}
         >
           <p className="eyebrow animate-reveal">
-            The leisure arm of {company.parent} · Colombo, Sri Lanka
+            {company.name} · Colombo, Sri Lanka
           </p>
           <h1
             className="text-display mt-6 text-[13vw] leading-[0.85] animate-reveal md:text-[9rem]"
@@ -74,29 +109,36 @@ export default function Home() {
             <br />
             <span className="italic text-primary">Unexplored.</span>
           </h1>
-          <div
-            className="mt-10 flex flex-col items-start justify-between gap-6 animate-reveal md:flex-row md:items-end"
-            style={{ animationDelay: "0.3s" }}
+          <p
+            className="mt-10 max-w-xl text-lg leading-relaxed text-foreground/90 animate-reveal"
+            style={{ animationDelay: "0.25s" }}
           >
-            <p className="max-w-md text-base leading-relaxed text-foreground/85">
-              A team of veteran travel professionals who believe corporate travel
-              should be seamless, prestigious and impeccably executed — for
-              corporate, incentive, leisure and group travel worldwide.
-            </p>
+            Veteran travel professionals for both sides of travel — the holiday
+            that should feel effortless, and the business trip that has to run
+            like clockwork.
+          </p>
+          <div
+            className="mt-10 flex flex-col gap-4 animate-reveal sm:flex-row"
+            style={{ animationDelay: "0.35s" }}
+          >
             <Link
-              to="/#paths"
-              className="group inline-flex items-center gap-3 border-b border-primary/70 pb-2 text-sm uppercase tracking-[0.28em] text-primary"
+              to="/personal-travel"
+              className="group inline-flex items-center justify-between gap-6 border border-primary bg-primary px-6 py-4 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground [text-shadow:none] transition-colors hover:bg-mist"
             >
-              Find your journey
-              <ArrowRight
-                size={16}
-                className="transition-transform group-hover:translate-x-1"
-              />
+              Personal Travels
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/corporate"
+              className="group inline-flex items-center justify-between gap-6 border border-foreground/40 bg-abyss/40 px-6 py-4 text-xs font-semibold uppercase tracking-[0.24em] text-foreground backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
+            >
+              Corporate &amp; Business
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-muted-foreground">
+        <div className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 text-muted-foreground md:block">
           <div className="flex flex-col items-center gap-2">
             <span className="text-[10px] uppercase tracking-[0.28em]">
               Scroll
@@ -106,123 +148,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Two doors */}
-      <section id="paths" className="scroll-mt-20 container-editorial relative z-10 -mt-px py-24">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {doors.map((door, i) => (
-            <Reveal key={door.to} delay={i * 0.1}>
-              <Link to={door.to} className="group relative block aspect-[4/3] overflow-hidden bg-secondary">
-                <img
-                  src={door.image}
-                  alt=""
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-abyss via-abyss/40 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-8 md:p-10">
-                  <p className="eyebrow">{door.eyebrow}</p>
-                  <h2 className="text-display mt-3 text-4xl leading-tight md:text-5xl">
-                    {door.title}
-                  </h2>
-                  <p className="mt-3 max-w-md text-sm text-foreground/80">
-                    {door.detail}
-                  </p>
-                  <span className="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-[0.24em] text-primary">
-                    {door.cta}
-                    <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* Who we are */}
-      <section id="about" className="relative scroll-mt-20 py-32">
-        <div className="container-editorial grid grid-cols-1 gap-16 lg:grid-cols-12">
-          <Reveal className="lg:col-span-5">
-            <p className="eyebrow">Who we are</p>
-            <h2 className="text-display mt-6 text-5xl leading-[0.95] md:text-6xl">
-              Every journey reflects
-              <br />
-              <em className="text-primary">your organization.</em>
-            </h2>
-            <Link
-              to="/about"
-              className="mt-8 inline-block gold-underline text-sm uppercase tracking-[0.24em] text-primary"
-            >
-              More about us →
-            </Link>
-          </Reveal>
-
-          <Reveal delay={0.1} className="lg:col-span-7">
-            <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
-              {whoWeAre.map((paragraph) => (
-                <p key={paragraph.slice(0, 24)}>{paragraph}</p>
-              ))}
-            </div>
-
-            <div className="mt-12 grid grid-cols-1 gap-px border border-border/50 bg-border/50 sm:grid-cols-2">
-              {pillars.map((pillar) => (
-                <div key={pillar.title} className="bg-abyss p-6">
-                  <p className="text-xs uppercase tracking-[0.24em] text-primary">
-                    {pillar.title}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {pillar.detail}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Vision & mission */}
-      <section className="relative py-16">
-        <div className="container-editorial">
-          <Reveal>
-            <p className="eyebrow text-center">
-              Guided by our purpose. Driven by our commitment.
-            </p>
-          </Reveal>
-          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
-            {visionMission.map((item, i) => (
-              <Reveal key={item.label} delay={i * 0.1}>
-                <div className="h-full border border-border/60 bg-secondary/30 p-10">
-                  <span className="grid h-11 w-11 place-items-center border border-primary/50 text-primary">
-                    {i === 0 ? <Binoculars size={18} /> : <Target size={18} />}
-                  </span>
-                  <h3 className="text-display mt-6 text-3xl">{item.label}</h3>
-                  <p className="mt-4 leading-relaxed text-muted-foreground">
-                    {item.body}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* The network / globe */}
-      <section id="network" className="relative scroll-mt-20 overflow-hidden py-32">
+      {/* Dynamic plans + the network behind them */}
+      <section id="network" className="relative scroll-mt-20 overflow-hidden py-28">
         <div className="container-editorial grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
           <Reveal>
-            <p className="eyebrow">Our global network</p>
-            <h2 className="text-display mt-6 text-6xl leading-[0.95] md:text-7xl">
-              Connecting businesses
+            <p className="eyebrow">Dynamic travel plans</p>
+            <h2 className="text-display mt-6 text-5xl leading-[0.95] md:text-7xl">
+              Plans that move
               <br />
-              <em className="text-primary">across borders.</em>
+              <em className="text-primary">as you do.</em>
             </h2>
             <p className="mt-8 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              We leverage a strong global travel network to deliver seamless
-              corporate and leisure travel experiences across the world's most
-              sought-after destinations. Through strategic partnerships and
-              industry expertise, we ensure exceptional service standards
-              wherever your journey takes you.
+              Every itinerary is built around you and stays flexible — we
+              adapt it with you as plans change. Behind it sits a global network
+              of agents across seven regions, and the expertise to put it to
+              work for a family holiday or a company-wide incentive tour.
             </p>
-            <div className="mt-10 grid grid-cols-3 gap-8 border-t border-border/50 pt-8">
+
+            <p className="eyebrow mt-12">Expertise, ready to be offered</p>
+            <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
+              {readyToOffer.map((item) => (
+                <li key={item.label} className="flex items-center gap-3">
+                  <ServiceIcon name={item.icon} size={36} />
+                  <span className="text-sm leading-snug text-foreground/90">
+                    {item.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-12 grid grid-cols-3 gap-8 border-t border-border/50 pt-8">
               {headlineStats.map((stat) => (
                 <div key={stat.label}>
                   <p className="text-display text-4xl text-primary">
@@ -244,17 +199,20 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Regional coverage */}
-        <div className="container-editorial mt-24">
+        {/* Where we take you: every destination pinned on the globe above */}
+        <div className="container-editorial mt-20">
           <Reveal>
-            <p className="eyebrow">Regional coverage</p>
+            <p className="eyebrow">Where we take you</p>
+            <h3 className="text-display mt-4 text-4xl md:text-5xl">
+              Seven regions, one travel desk.
+            </h3>
           </Reveal>
-          <div className="mt-8 grid grid-cols-2 gap-x-8 gap-y-10 border-t border-border/50 pt-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+          <div className="mt-10 grid grid-cols-2 gap-x-8 gap-y-10 border-t border-border/50 pt-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
             {regions.map((region, i) => (
               <Reveal key={region.name} delay={(i % 4) * 0.06}>
-                <h3 className="text-display text-2xl leading-tight text-primary">
+                <h4 className="text-display text-2xl leading-tight text-primary">
                   {region.name}
-                </h3>
+                </h4>
                 <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
                   {region.places.map((place) => (
                     <li key={place}>{place}</li>
@@ -263,27 +221,109 @@ export default function Home() {
               </Reveal>
             ))}
           </div>
+        </div>
+      </section>
 
+      {/* Two crafts */}
+      <section id="paths" className="relative scroll-mt-20 py-28">
+        <div className="container-editorial">
           <Reveal>
-            <div className="mt-16 border-t border-border/50 pt-10">
-              <p className="eyebrow">Our global reach includes</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                {globalReach.map((item) => (
-                  <span
-                    key={item}
-                    className="border border-border/60 px-4 py-2 text-xs uppercase tracking-[0.18em] text-muted-foreground"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <h2 className="text-display max-w-3xl text-5xl leading-[0.95] md:text-7xl">
+                Two kinds of travel.
+                <br />
+                <em className="text-primary">Both, done properly.</em>
+              </h2>
+              <p className="max-w-sm text-muted-foreground">
+                A holiday and a business trip ask for different things. We know
+                the difference — and the craft behind each.
+              </p>
             </div>
           </Reveal>
+
+          <div className="mt-20 space-y-24 md:space-y-32">
+            {crafts.map((craft, i) => (
+              <div
+                key={craft.to}
+                className="grid grid-cols-1 items-center gap-10 md:grid-cols-12 md:gap-16"
+              >
+                <Reveal
+                  className={`md:col-span-7 ${i % 2 ? "md:order-2" : ""}`}
+                >
+                  <Link
+                    to={craft.to}
+                    className="group block aspect-[4/3] overflow-hidden bg-secondary"
+                    aria-label={craft.cta}
+                  >
+                    <img
+                      src={craft.image}
+                      alt={craft.imageAlt}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+                    />
+                  </Link>
+                </Reveal>
+                <Reveal
+                  delay={0.1}
+                  className={`md:col-span-5 ${i % 2 ? "md:order-1" : ""}`}
+                >
+                  <p className="eyebrow">{craft.eyebrow}</p>
+                  <h3 className="text-display mt-4 text-4xl leading-tight md:text-5xl">
+                    {craft.title}
+                  </h3>
+                  <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+                    {craft.body}
+                  </p>
+                  <ul className="mt-8 flex flex-wrap gap-2">
+                    {craft.tags.map((tag) => (
+                      <li
+                        key={tag}
+                        className="border border-border/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-foreground/80"
+                      >
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to={craft.to}
+                    className="group mt-10 inline-flex items-center gap-3 border-b border-primary/70 pb-2 text-sm uppercase tracking-[0.24em] text-primary"
+                  >
+                    {craft.cta}
+                    <ArrowRight
+                      size={16}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
+                  </Link>
+                </Reveal>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Principles */}
+      <section className="relative py-28">
+        <div className="container-editorial">
+          <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-3">
+            {principles.map((item, i) => (
+              <Reveal key={item.title} delay={i * 0.08} className="h-full">
+                <div className="h-full bg-abyss p-10">
+                  <ServiceIcon name={item.icon} size={56} />
+                  <h3 className="text-display mt-8 text-3xl leading-tight">
+                    {item.title}
+                  </h3>
+                  <p className="mt-4 leading-relaxed text-muted-foreground">
+                    {item.body}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Memories */}
-      <section id="memories" className="relative scroll-mt-20 py-32">
+      <section id="memories" className="relative scroll-mt-20 py-28">
         <div className="container-editorial">
           <div className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <Reveal>
@@ -294,8 +334,8 @@ export default function Home() {
             </Reveal>
             <Reveal delay={0.1}>
               <p className="max-w-sm text-sm text-muted-foreground">
-                Dealer tours, partner tours, incentive trips and group holidays
-                we have arranged for our clients.
+                Corporate incentive tours, group journeys and cruises we have
+                arranged for our clients.
               </p>
             </Reveal>
           </div>
@@ -304,39 +344,60 @@ export default function Home() {
         </div>
       </section>
 
-      <Process />
-
-      {/* Plan a journey */}
-      <section className="relative py-32">
+      {/* Where next */}
+      <section className="relative py-28">
         <div className="container-editorial">
           <Reveal>
-            <div className="grid grid-cols-1 gap-12 border border-border/60 bg-secondary/40 p-10 md:grid-cols-2 md:p-16">
-              <div>
-                <p className="eyebrow">Connect with us</p>
-                <h3 className="text-display mt-4 text-4xl md:text-5xl">
-                  Let's plan the
-                  <br />
-                  next one together.
-                </h3>
-              </div>
-              <div className="flex flex-col justify-between gap-6">
-                <p className="text-muted-foreground">
-                  We truly appreciate your time, trust and partnership. Tell us
-                  about your next corporate, incentive, leisure or group journey,
-                  or call our hotline on {company.hotline}.
-                </p>
+            <p className="eyebrow">Connect with us</p>
+            <h2 className="text-display mt-4 text-5xl md:text-6xl">
+              Where are you headed next?
+            </h2>
+          </Reveal>
+          <div className="mt-12 grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-2">
+            {[
+              {
+                to: "/personal-travel#plan",
+                eyebrow: "Planning a holiday?",
+                line: "Tell us where, when and who's coming — we'll shape the trip around you.",
+                cta: "Start planning",
+              },
+              {
+                to: "/corporate#proposal",
+                eyebrow: "Planning for your team?",
+                line: "Travel management, conferences and incentive tours, proposed to your brief.",
+                cta: "Request a proposal",
+              },
+            ].map((item, i) => (
+              <Reveal key={item.to} delay={i * 0.08} className="h-full">
                 <Link
-                  to="/contact"
-                  className="group inline-flex w-fit items-center gap-3 border border-primary bg-primary px-8 py-4 text-xs uppercase tracking-[0.24em] text-primary-foreground transition-all hover:bg-transparent hover:text-primary"
+                  to={item.to}
+                  className="group flex h-full flex-col justify-between gap-10 bg-secondary/40 p-10 transition-colors hover:bg-secondary/70 md:p-14"
                 >
-                  Request a proposal
-                  <ArrowRight
-                    size={14}
-                    className="transition-transform group-hover:translate-x-1"
-                  />
+                  <div>
+                    <p className="eyebrow">{item.eyebrow}</p>
+                    <p className="text-display mt-4 text-3xl leading-snug">
+                      {item.line}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.24em] text-primary">
+                    {item.cta}
+                    <ArrowRight
+                      size={16}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
+                  </span>
                 </Link>
-              </div>
-            </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal>
+            <p className="mt-10 text-sm text-muted-foreground">
+              Or call our hotline on{" "}
+              <a href={`tel:${company.hotlineHref}`} className="gold-underline text-foreground">
+                {company.hotline}
+              </a>
+              .
+            </p>
           </Reveal>
         </div>
       </section>

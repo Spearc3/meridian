@@ -1,14 +1,14 @@
-import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import EnquiryForm from "../components/EnquiryForm";
 import Reveal from "../components/Reveal";
-import { company, generalEnquiry, globalPartners } from "../tpl";
+import ServiceIcon from "../components/ServiceIcon";
+import { company, generalEnquiry } from "../tpl";
 
 const details = [
-  { icon: Mail, label: "The travel desk", value: company.email },
-  { icon: Phone, label: "Hotline", value: company.hotline },
-  { icon: MapPin, label: "Office", value: company.address.slice(0, 2).join(", ") },
-  { icon: Globe, label: "Online", value: company.website },
+  { icon: "email", label: "The travel desk", value: company.email },
+  { icon: "hotline", label: "Hotline", value: company.hotline },
+  { icon: "location", label: "Office", value: company.address.slice(0, 2).join(", ") },
+  { icon: "website", label: "Online", value: company.website },
 ];
 
 export default function Contact() {
@@ -49,17 +49,15 @@ export default function Contact() {
             <p className="eyebrow">{company.legalName}</p>
             <p className="mt-4 text-muted-foreground">
               {company.address.join(", ")}. The leisure arm of {company.parent},
-              with partners on the ground in France and the Netherlands.
+              with agents around the globe.
             </p>
           </Reveal>
 
           <Reveal delay={0.1}>
             <div className="space-y-4">
-              {details.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-start gap-4">
-                  <div className="mt-1 grid h-9 w-9 place-items-center border border-primary/50 text-primary">
-                    <Icon size={15} />
-                  </div>
+              {details.map(({ icon, label, value }) => (
+                <div key={label} className="flex items-center gap-5">
+                  <ServiceIcon name={icon} size={44} />
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
                       {label}
@@ -72,23 +70,14 @@ export default function Contact() {
           </Reveal>
 
           <Reveal delay={0.2}>
-            <div className="border border-border/60 p-8">
-              <p className="eyebrow">Our global partners</p>
-              <div className="mt-5 space-y-5">
-                {globalPartners.map((partner) => (
-                  <div key={partner.country}>
-                    <p className="text-xs uppercase tracking-[0.24em] text-primary">
-                      {partner.country}
-                    </p>
-                    <p className="text-display mt-1 text-xl">{partner.name}</p>
-                    <a
-                      href={`tel:${partner.phone.replace(/\s/g, "")}`}
-                      className="gold-underline text-sm text-muted-foreground"
-                    >
-                      {partner.phone}
-                    </a>
-                  </div>
-                ))}
+            <div className="flex items-center gap-5 border border-border/60 p-8">
+              <ServiceIcon name="globe" size={44} />
+              <div>
+                <p className="eyebrow">Agents around the globe</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Wherever your journey takes you, our agents around the globe
+                  are on hand to support it.
+                </p>
               </div>
             </div>
           </Reveal>

@@ -4,6 +4,7 @@ import earthMap from "../assets/earth_atmos_2048.jpg";
 import earthNormal from "../assets/earth_normal_2048.jpg";
 import earthSpecular from "../assets/earth_specular_2048.jpg";
 import earthClouds from "../assets/earth_clouds_1024.png";
+import { regions } from "../tpl";
 
 export type GlobePoint = {
   name: string;
@@ -12,20 +13,60 @@ export type GlobePoint = {
   lon: number;
 };
 
-/* Home desk first, then one pin per region of the network. */
+/** Where each destination in the deck's regional-coverage list sits. Country
+ *  entries are pinned at their capital or main gateway city. */
+const coordinates: Record<string, [number, number]> = {
+  "New York": [40.71, -74.01],
+  "Los Angeles": [34.05, -118.24],
+  Chicago: [41.88, -87.63],
+  Houston: [29.76, -95.37],
+  Miami: [25.76, -80.19],
+  Toronto: [43.65, -79.38],
+  Vancouver: [49.28, -123.12],
+  Montreal: [45.5, -73.57],
+  Calgary: [51.05, -114.07],
+  Singapore: [1.35, 103.82],
+  Thailand: [13.76, 100.5],
+  Malaysia: [3.14, 101.69],
+  China: [39.9, 116.41],
+  Japan: [35.68, 139.69],
+  India: [28.61, 77.21],
+  UAE: [25.2, 55.27],
+  Qatar: [25.29, 51.53],
+  "Saudi Arabia": [24.71, 46.68],
+  Oman: [23.59, 58.41],
+  Bahrain: [26.23, 50.59],
+  Kuwait: [29.38, 47.99],
+  "United Kingdom": [51.51, -0.13],
+  France: [48.86, 2.35],
+  Germany: [52.52, 13.4],
+  Italy: [41.9, 12.5],
+  Netherlands: [52.37, 4.9],
+  Switzerland: [47.38, 8.54],
+  Sydney: [-33.87, 151.21],
+  Melbourne: [-37.81, 144.96],
+  Brisbane: [-27.47, 153.03],
+  Auckland: [-36.85, 174.76],
+  "South Africa": [-26.2, 28.05],
+  Kenya: [-1.29, 36.82],
+  Morocco: [34.02, -6.84],
+  Egypt: [30.04, 31.24],
+};
+
+/* Home desk first, then a pin for every destination the deck lists — built
+   from the same `regions` list the home page prints under the globe. */
 export const globePoints: GlobePoint[] = [
   { name: "Colombo", region: "Sri Lanka — our desk", lat: 6.93, lon: 79.86 },
-  { name: "New York", region: "USA", lat: 40.71, lon: -74.01 },
-  { name: "Toronto", region: "Canada", lat: 43.65, lon: -79.38 },
-  { name: "London", region: "United Kingdom", lat: 51.51, lon: -0.13 },
-  { name: "Zürich", region: "Switzerland", lat: 47.38, lon: 8.54 },
-  { name: "Dubai", region: "United Arab Emirates", lat: 25.2, lon: 55.27 },
-  { name: "Singapore", region: "Singapore", lat: 1.35, lon: 103.82 },
-  { name: "Tokyo", region: "Japan", lat: 35.68, lon: 139.69 },
-  { name: "Sydney", region: "Australia", lat: -33.87, lon: 151.21 },
-  { name: "Auckland", region: "New Zealand", lat: -36.85, lon: 174.76 },
-  { name: "Nairobi", region: "Kenya", lat: -1.29, lon: 36.82 },
-  { name: "Cape Town", region: "South Africa", lat: -33.92, lon: 18.42 },
+  ...regions.flatMap((region) =>
+    region.places
+      .filter((place) => place in coordinates)
+      .map((place) => ({
+        name: place,
+        region: region.name,
+        lat: coordinates[place][0],
+        lon: coordinates[place][1],
+      })),
+  ),
 ];
 
 const RADIUS = 1.6;
@@ -212,7 +253,7 @@ export default function Globe() {
       markers.add(marker);
 
       const halo = new THREE.Mesh(
-        new THREE.SphereGeometry(0.07, 16, 16),
+        new THREE.SphereGeometry(0.055, 16, 16),
         new THREE.MeshBasicMaterial({
           color: markerColor,
           transparent: true,

@@ -8,9 +8,11 @@ export default function ServiceGrid({ items }: { items: Solution[] }) {
       {items.map((item, i) => (
         <Reveal key={item.title} delay={(i % 3) * 0.08} className="h-full">
           <div className="group flex h-full flex-col bg-abyss p-8 transition-colors hover:bg-secondary/30">
-            <span className="grid h-11 w-11 place-items-center border border-primary/40 transition-colors group-hover:border-primary">
-              <ServiceIcon name={item.icon} />
-            </span>
+            <ServiceIcon
+              name={item.icon}
+              size={56}
+              className="transition-transform duration-500 group-hover:-translate-y-0.5"
+            />
             <h3 className="text-display mt-6 text-2xl leading-tight">
               {item.title}
             </h3>

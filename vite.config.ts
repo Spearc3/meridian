@@ -18,7 +18,7 @@ export default defineConfig({
       // 404.html stays as the shell for genuinely unknown paths.
       name: "static-routes",
       closeBundle() {
-        for (const route of ["personal-travel", "corporate", "about", "contact"]) {
+        for (const route of ["personal-travel", "corporate", "about", "contact", "terms"]) {
           mkdirSync(`dist/${route}`, { recursive: true });
           copyFileSync("dist/index.html", `dist/${route}/index.html`);
         }

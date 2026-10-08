@@ -1,29 +1,32 @@
 import Reveal from "../components/Reveal";
+import ServiceIcon from "../components/ServiceIcon";
 import PageHero from "../components/PageHero";
 import ServiceGrid from "../components/ServiceGrid";
 import MemoryWall from "../components/MemoryWall";
 import Process from "../components/Process";
 import EnquiryForm from "../components/EnquiryForm";
-import hero from "../assets/tpl-shanghai-snow.jpg";
+import hero from "../assets/tpl-memory-01.jpg";
 import {
   corporateEnquiry,
   corporateServices,
   essentials,
-  leadership,
   memories,
   whoWeAre,
 } from "../tpl";
 
 const promises = [
   {
+    icon: "experience",
     title: "Powered by experience",
-    detail: "A leadership team with nearly a century of combined expertise.",
+    detail: "A leadership team with 25+ years in the travel industry.",
   },
   {
+    icon: "excellence",
     title: "Driven by excellence",
     detail: "Seamless, prestigious and impeccably executed — every time.",
   },
   {
+    icon: "service",
     title: "Focused on service",
     detail: "Every journey reflects the standards of your organization.",
   },
@@ -89,41 +92,19 @@ export default function Corporate() {
         </Reveal>
       </section>
 
-      {/* Promises + leadership */}
+      {/* Promises */}
       <section className="container-editorial py-24">
         <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-3">
           {promises.map((p, i) => (
             <Reveal key={p.title} delay={i * 0.08} className="h-full">
               <div className="h-full bg-abyss p-8">
-                <p className="text-xs uppercase tracking-[0.24em] text-primary">
+                <ServiceIcon name={p.icon} size={48} />
+                <p className="mt-6 text-xs uppercase tracking-[0.24em] text-primary">
                   {p.title}
                 </p>
                 <p className="text-display mt-4 text-2xl leading-snug">
                   {p.detail}
                 </p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-        <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-3">
-          {leadership.map((person, i) => (
-            <Reveal key={person.name} delay={i * 0.08}>
-              <div className="flex items-center gap-5">
-                <img
-                  src={person.image}
-                  alt={person.name}
-                  loading="lazy"
-                  className="h-20 w-20 shrink-0 object-cover object-top"
-                />
-                <div>
-                  <p className="text-display text-xl">{person.name}</p>
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-primary">
-                    {person.role}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {person.note}
-                  </p>
-                </div>
               </div>
             </Reveal>
           ))}
@@ -134,7 +115,7 @@ export default function Corporate() {
         <Reveal>
           <p className="eyebrow">From the field</p>
           <h2 className="text-display mt-4 mb-14 text-5xl md:text-6xl">
-            Dealer, partner and incentive tours.
+            Memories we created.
           </h2>
         </Reveal>
         <MemoryWall items={memories.filter((m) => m.audience === "corporate")} />
