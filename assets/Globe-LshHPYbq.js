@@ -1,0 +1,43 @@
+import{a as e,i as t,n,r}from"./index-zKnVAbez.js";import{C as i,S as a,_ as o,a as ee,b as s,c,d as te,g as ne,i as l,l as u,m as re,n as ie,o as d,r as ae,t as oe,u as se,v as ce,x as le,y as ue}from"./three.module-BCF_izlg.js";var f=e(t(),1),de=`/meridian/assets/earth_atmos_2048-d1pdJ3jg.jpg`,fe=`/meridian/assets/earth_normal_2048-BD2vMuPH.jpg`,pe=`/meridian/assets/earth_specular_2048-6aAFN27D.jpg`,me=`/meridian/assets/earth_atmos_1024-CEWob4XO.jpg`,he=`/meridian/assets/earth_normal_1024-CYLTuU97.jpg`,ge=`/meridian/assets/earth_specular_1024-DEnDx2Ap.jpg`,_e=`/meridian/assets/earth_clouds_1024-Drs1B1Zj.png`,p=r(),m={"New York":[40.71,-74.01],"Los Angeles":[34.05,-118.24],Chicago:[41.88,-87.63],Houston:[29.76,-95.37],Miami:[25.76,-80.19],Toronto:[43.65,-79.38],Vancouver:[49.28,-123.12],Montreal:[45.5,-73.57],Calgary:[51.05,-114.07],Singapore:[1.35,103.82],Thailand:[13.76,100.5],Malaysia:[3.14,101.69],China:[39.9,116.41],Japan:[35.68,139.69],India:[28.61,77.21],UAE:[25.2,55.27],Qatar:[25.29,51.53],"Saudi Arabia":[24.71,46.68],Oman:[23.59,58.41],Bahrain:[26.23,50.59],Kuwait:[29.38,47.99],"United Kingdom":[51.51,-.13],France:[48.86,2.35],Germany:[52.52,13.4],Italy:[41.9,12.5],Netherlands:[52.37,4.9],Switzerland:[47.38,8.54],Sydney:[-33.87,151.21],Melbourne:[-37.81,144.96],Brisbane:[-27.47,153.03],Auckland:[-36.85,174.76],"South Africa":[-26.2,28.05],Kenya:[-1.29,36.82],Morocco:[34.02,-6.84],Egypt:[30.04,31.24]},h=[{name:`Colombo`,region:`Sri Lanka — our desk`,lat:6.93,lon:79.86},...n.flatMap(e=>e.places.filter(e=>e in m).map(t=>({name:t,region:e.name,lat:m[t][0],lon:m[t][1]})))],g=1.6;function ve(e,t,n){let r=(90-e)*(Math.PI/180),a=(t+180)*(Math.PI/180);return new i(-n*Math.sin(r)*Math.cos(a),n*Math.cos(r),n*Math.sin(r)*Math.sin(a))}function _(){let e=(0,f.useRef)(null),[t,n]=(0,f.useState)(null);return(0,f.useEffect)(()=>{let t=e.current;if(!t)return;let r=new ce,f=new re(40,1,.1,100);f.position.z=5.4;let p=window.matchMedia(`(pointer: coarse)`).matches,m=Math.min(window.devicePixelRatio,p?1.5:2),_=new oe({antialias:!0,alpha:!0});_.setPixelRatio(m);let v=p?64:96;_.domElement.style.touchAction=`pan-y`,_.toneMapping=0,_.outputColorSpace=o,t.appendChild(_.domElement);let y=new d;y.rotation.x=.35,y.rotation.y=-1.1,r.add(y);let b=new d;b.rotation.z=23.4*Math.PI/180,y.add(b);let x=t.clientWidth*m<=640,S=new le,ye=S.load(x?me:de);ye.colorSpace=o;let be=S.load(_e);be.colorSpace=o;let xe=S.load(x?ge:pe),C={uTime:{value:0},uOceanMask:{value:xe}},w=new te({map:ye,normalMap:S.load(x?he:fe),normalScale:new a(.85,.85),specularMap:xe,specular:new l(`#16303f`),shininess:55});w.onBeforeCompile=e=>{e.uniforms.uTime=C.uTime,e.uniforms.uOceanMask=C.uOceanMask,e.fragmentShader=e.fragmentShader.replace(`void main() {`,`
+          uniform float uTime;
+          uniform sampler2D uOceanMask;
+
+          float swell(vec2 uv, float time) {
+            float a = sin(uv.x * 90.0 + time * 0.6);
+            float b = sin(uv.y * 64.0 - time * 0.45);
+            float c = sin((uv.x + uv.y) * 48.0 + time * 0.33);
+            return (a * b + c) * 0.5;
+          }
+
+          void main() {
+          `).replace(`#include <map_fragment>`,`
+          #include <map_fragment>
+          float ocean = texture2D(uOceanMask, vMapUv).r;
+          float wave = swell(vMapUv, uTime);
+          vec3 oceanShallow = vec3(0.129, 0.420, 0.729);
+          vec3 oceanDeep = vec3(0.031, 0.169, 0.451);
+          // Land is dark in the Blue Marble map; lift it so it holds up against
+          // the lightened sea.
+          diffuseColor.rgb *= mix(1.35, 1.0, ocean);
+          vec3 water = mix(oceanDeep, oceanShallow, 0.5 + wave * 0.11);
+          diffuseColor.rgb = mix(diffuseColor.rgb, water, ocean * 0.8);
+          `)};let Se=new u(new s(g,v,v),w);b.add(Se);let T=new u(new s(g*1.012,v,v),new te({map:be,transparent:!0,opacity:.42,depthWrite:!1}));b.add(T);let E=new ee(16774368,2.3);E.position.set(-1.6,1.1,4.2),r.add(E),r.add(new ie(7180456,.6));let D=new ee(8373976,.45);D.position.set(3,-1,-2.5),r.add(D);let Ce=new u(new s(g*1.16,64,64),new ue({transparent:!0,side:1,blending:2,depthWrite:!1,uniforms:{uColor:{value:new l(`#6fc4e0`)},uSun:{value:E.position.clone().normalize()}},vertexShader:`
+          varying vec3 vNormal;
+          varying vec3 vWorldNormal;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vWorldNormal = normalize(mat3(modelMatrix) * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,fragmentShader:`
+          uniform vec3 uColor;
+          uniform vec3 uSun;
+          varying vec3 vNormal;
+          varying vec3 vWorldNormal;
+          void main() {
+            float rim = pow(0.68 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.2);
+            // Scatter concentrates on the lit limb, as it does from orbit.
+            float lit = clamp(dot(vWorldNormal, uSun) * 0.5 + 0.62, 0.0, 1.0);
+            gl_FragColor = vec4(uColor, 1.0) * rim * lit * 1.5;
+          }
+        `}));y.add(Ce);let O=new d;b.add(O);let we=new s(.028,16,16),k=new l(`#ffd79a`);h.forEach((e,t)=>{let n=ve(e.lat,e.lon,g*1.015),r=new u(we,new se({color:k}));r.position.copy(n),r.userData={index:t},O.add(r);let i=new u(new s(.055,16,16),new se({color:k,transparent:!0,opacity:.22,depthWrite:!1}));i.position.copy(n),i.userData={halo:!0,phase:t*.7},O.add(i)});let A=new ne,j=new a,M=!1,N=!1,P=!1,F=0,I=0,L=.0016,R=0,z=-1/0,B=1,V=()=>{z=performance.now()},Te=.005,H=null,U=0,W=0,G=0,K=0,q=0,Ee=e=>{let t=_.domElement.getBoundingClientRect();if(j.x=(e.clientX-t.left)/t.width*2-1,j.y=-((e.clientY-t.top)/t.height)*2+1,M=!0,N=!0,V(),P&&e.pointerId===H){let t=e.clientX-F,n=e.clientY-I;U+=t,W+=n;let r=Math.max(1,e.timeStamp-q);G=G*.7+t/r*.3,K=K*.7+n/r*.3,F=e.clientX,I=e.clientY,q=e.timeStamp}},De=e=>{V(),H===null&&(e.pointerType===`mouse`&&e.button!==0||(H=e.pointerId,P=!0,F=e.clientX,I=e.clientY,q=e.timeStamp,G=K=0,L=R=0,_.domElement.setPointerCapture(e.pointerId)))},J=e=>{if(V(),e.pointerId!==H)return;H=null,P=!1;let t=e.timeStamp-q<80;L=t?G*16.7*35e-5:0,R=t?K*16.7*35e-5:0},Y=()=>{M=!1,n(null)};_.domElement.addEventListener(`pointermove`,Ee),_.domElement.addEventListener(`pointerdown`,De),_.domElement.addEventListener(`pointerup`,J),_.domElement.addEventListener(`pointercancel`,J),_.domElement.addEventListener(`lostpointercapture`,J),_.domElement.addEventListener(`pointerleave`,Y);let Oe=()=>{let e=t.clientWidth;_.setSize(e,e,!1),_.domElement.style.width=`100%`,_.domElement.style.height=`100%`,f.aspect=1,f.updateProjectionMatrix()};Oe();let ke=new ResizeObserver(Oe);ke.observe(t);let Ae=new ae,X=0,Z=!0,Q=new IntersectionObserver(([e])=>{Z=e.isIntersecting,Z&&!X&&(X=requestAnimationFrame($))});Q.observe(t);let $=()=>{if(!Z){X=0;return}X=requestAnimationFrame($);let e=Ae.getElapsedTime();(U||W)&&(y.rotation.y+=U*Te,y.rotation.x=c.clamp(y.rotation.x+W*Te,-.9,.9),U=W=0);let t=performance.now()-z>5e3;if(B+=(+!!t-B)*(t?.02:.12),P||(L+=(.0016*B-L)*(t?.02:.08),R*=.94,y.rotation.y+=L,y.rotation.x=c.clamp(y.rotation.x+R,-.9,.9)),C.uTime.value=e,T.rotation.y+=4e-4*B,O.children.forEach(t=>{if(t.userData.halo){let n=1+Math.sin(e*1.6+t.userData.phase)*.35;t.scale.setScalar(n)}}),M&&N&&!P){N=!1,A.setFromCamera(j,f);let e=A.intersectObjects(O.children.filter(e=>!e.userData.halo),!1).filter(e=>e.object.getWorldPosition(new i).z>0),t=e.length>0?h[e[0].object.userData.index]:null;n(e=>e?.name===t?.name?e:t),_.domElement.style.cursor=e.length?`pointer`:`grab`}_.render(r,f)};return $(),()=>{cancelAnimationFrame(X),Q.disconnect(),ke.disconnect(),_.domElement.removeEventListener(`pointermove`,Ee),_.domElement.removeEventListener(`pointerdown`,De),_.domElement.removeEventListener(`pointerup`,J),_.domElement.removeEventListener(`pointercancel`,J),_.domElement.removeEventListener(`lostpointercapture`,J),_.domElement.removeEventListener(`pointerleave`,Y),_.dispose(),t.removeChild(_.domElement)}},[]),(0,p.jsxs)(`div`,{className:`relative h-full w-full`,children:[(0,p.jsx)(`div`,{ref:e,className:`h-full w-full cursor-grab select-none`}),t&&(0,p.jsxs)(`div`,{className:`pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 border border-primary/50 bg-abyss/80 px-4 py-2 text-center backdrop-blur`,children:[(0,p.jsx)(`p`,{className:`text-display text-xl text-primary`,children:t.name}),(0,p.jsx)(`p`,{className:`text-[10px] uppercase tracking-[0.24em] text-muted-foreground`,children:t.region})]})]})}export{_ as default,h as globePoints};
