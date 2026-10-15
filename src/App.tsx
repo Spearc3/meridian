@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Advisor from "./components/Advisor";
+import PageTransition from "./components/PageTransition";
 
 export default function App() {
   const { pathname, hash } = useLocation();
@@ -15,12 +17,12 @@ export default function App() {
   // A new page starts at the top — before its first paint, so it never flashes
   // in at the previous page's scroll position with its hero half gone.
   useLayoutEffect(() => {
-    if (!hash) window.scrollTo(0, 0);
+    if (!hash) window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname, hash]);
 
   useEffect(() => {
-    // Nav links like /#plan land on a section. Deferred a frame so the target
-    // section has rendered.
+    // Links like /corporate#proposal land on a section. Deferred a frame so the
+    // target section has rendered.
     const id = hash.slice(1);
     if (!id) return;
     requestAnimationFrame(() => {
@@ -31,12 +33,13 @@ export default function App() {
   }, [pathname, hash]);
 
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <>
       <Header />
-      <main className="flex-1">
+      <PageTransition>
         <Outlet />
-      </main>
+      </PageTransition>
       <Footer />
-    </div>
+      <Advisor />
+    </>
   );
 }

@@ -1,15 +1,11 @@
 /**
- * Travel Port Leisure (Private) Limited — every word on the landing page comes
- * from the corporate deck, transcribed here so the page itself stays layout.
+ * Travel Port Leisure (Private) Limited — every word on the site lives here, so
+ * the pages themselves stay layout. Wording follows the corporate deck.
  */
-
-import type { EnquiryField } from "./components/EnquiryForm";
 
 import harsha from "./assets/tpl-harsha.jpg";
 import sameera from "./assets/tpl-sameera.jpg";
 
-// "Memories we created" photographs, taken from the deck's closing pages.
-// Neutral file names: the deck's text doesn't name where each was taken.
 import memory01 from "./assets/tpl-memory-01.jpg";
 import memory02 from "./assets/tpl-memory-02.jpg";
 import memory03 from "./assets/tpl-memory-03.jpg";
@@ -19,410 +15,430 @@ import memory06 from "./assets/tpl-memory-06.jpg";
 import memory07 from "./assets/tpl-memory-07.jpg";
 import memory08 from "./assets/tpl-memory-08.jpg";
 
+import singapore from "./assets/destinations/singapore.jpg";
+import italy from "./assets/destinations/italy.jpg";
+import china from "./assets/destinations/china.jpg";
+import morocco from "./assets/destinations/morocco.jpg";
+import sanFrancisco from "./assets/destinations/san-francisco.jpg";
+
 export const company = {
   name: "Travel Port Leisure",
-  legalName: "Travel Port Leisure (Private) Ltd",
-  parent: "Base HP",
-  tagline: "Explore the Unexplored",
-  address: ["No. 181, Nawala Road", "Narahenpita, Colombo 05", "Sri Lanka"],
+  legalName: "Travel Port Leisure (Private) Limited",
+  short: "TP Leisure",
+  address: "No. 181, Nawala Road, Narahenpita, Colombo 05, Sri Lanka",
+  phone: "+94 11 255 2452",
+  mobile: "+94 77 339 3577",
   email: "info@tpleisure.lk",
   website: "www.tpleisure.lk",
-  hotline: "+94 11 255 2452",
-  /** Dialable form of the hotline, for the tel: href. */
-  hotlineHref: "+94112552452",
+  registration: "PV 00365932",
+  caasl: "A-2105",
+  hours: "Monday – Friday, 9:00 AM – 5:30 PM (IST)",
 };
 
-export const whoWeAre = [
-  "We are a team of veteran travel professionals who believe that corporate travel should be seamless, prestigious, and impeccably executed — in a market often saturated with limited-exposure providers.",
-  "We stand apart. We specialize in the complex logistics of MICE (Meetings, Incentives, Conferences & Exhibitions) and Corporate Incentive Tours, ensuring that every journey reflects the standards of your organization.",
+export const navLinks = [
+  { to: "/", label: "Home" },
+  { to: "/personal-travel", label: "Personal Travels" },
+  { to: "/corporate", label: "Corporate & Business" },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
 ];
 
-export const visionMission = [
-  {
-    label: "Our Vision",
-    body: "To be Sri Lanka's most trusted corporate and leisure travel partner, delivering innovative travel solutions, unforgettable experiences, and world-class service excellence while setting new benchmarks in the travel industry.",
-  },
-  {
-    label: "Our Mission",
-    body: "To create seamless, personalized, and value-driven travel experiences through industry expertise, strategic partnerships, operational excellence, and a customer-first approach, ensuring every journey exceeds expectations.",
-  },
-];
+/** Dialable form of a displayed number, for tel: links. */
+export const tel = (number: string) => `tel:${number.replaceAll(" ", "")}`;
 
-/** The four promises running along the foot of the vision & mission page. */
-export const pillars = [
-  {
-    icon: "corporate",
-    title: "Corporate Travel",
-    detail: "Smart solutions for modern businesses.",
-  },
-  { icon: "mice", title: "MICE & Incentives", detail: "Engaging events. Lasting impact." },
-  { icon: "location", title: "Leisure Travel", detail: "Curated holidays. Cherished memories." },
-  {
-    icon: "globe",
-    title: "Global Connections",
-    detail: "Strong partnerships. Wider possibilities.",
-  },
-];
-
-export type Solution = {
+export type Service = {
+  title: string;
+  blurb: string;
   /** Basename of an icon in src/assets/icons — the client's two-tone set. */
   icon: string;
-  title: string;
-  detail: string;
 };
 
-/** "Comprehensive Travel Solutions", in deck order. */
-export const solutions: Solution[] = [
+/** Personal Travels — "Ways to travel". */
+export const personalServices: Service[] = [
   {
-    icon: "gift",
-    title: "Corporate Incentive Tours",
-    detail:
-      "Reward and motivate teams with expertly curated incentive travel experiences.",
+    title: "Honeymoon Packages",
+    blurb: "A journey for two, shaped around your pace, preferred destinations and special moments together.",
+    icon: "honeymoon",
   },
   {
-    icon: "lounge",
-    title: "Airport Lounge Facilities",
-    detail:
-      "Premium lounge access for comfort, convenience and productivity while traveling.",
+    title: "Family Trips",
+    blurb: "Holidays planned around the whole family, with time for shared adventures and relaxation.",
+    icon: "globe",
   },
   {
+    title: "Extended Group Trips",
+    blurb: "Longer journeys for friends and extended families, with itineraries and arrangements coordinated for the group.",
     icon: "group",
-    title: "Group Travel & Leisure Tours",
-    detail:
-      "Customized group journeys designed for memorable leisure and team experiences.",
   },
   {
-    icon: "cruise",
-    title: "Cruise Bookings",
-    detail:
-      "Exclusive cruise vacations with leading global cruise partners.",
-  },
-  {
-    icon: "hotel",
-    title: "Hotel Reservations & Ground Handling",
-    detail:
-      "Worldwide accommodation, transfers and destination support services.",
-  },
-  {
-    icon: "visa",
-    title: "Visa Consultation for All Destinations",
-    detail:
-      "Professional visa guidance and documentation support for hassle-free travel.",
-  },
-  {
-    icon: "chauffeur",
-    title: "Chauffeur Services",
-    detail:
-      "Reliable executive transportation solutions for business and leisure travelers.",
-  },
-  {
-    icon: "insurance",
-    title: "Travel Insurance",
-    detail:
-      "Comprehensive protection and peace of mind throughout your journey.",
-  },
-];
-
-/** "Our Core Services". */
-export const coreServices: Solution[] = [
-  {
-    icon: "air",
-    title: "Global Aviation Solutions",
-    detail: "International and domestic ticketing with optimized routing.",
-  },
-  {
-    icon: "support",
-    title: "Comprehensive Support",
-    detail:
-      "Visa consultations for all destinations, travel insurance, airport lounge access, and chauffeur services.",
-  },
-  {
-    icon: "mice",
-    title: "MICE & Incentives",
-    detail:
-      "Specialist handling of large-scale conferences and reward tours.",
-  },
-  {
-    icon: "corporate",
-    title: "Corporate Travel Management",
-    detail: "End-to-end management for executive teams.",
-  },
-  {
-    icon: "diamond",
     title: "Luxury & FIT Travel",
-    detail:
-      "Tailor-made itineraries for discerning individuals, and customized travel experiences.",
+    blurb: "Tailor-made itineraries for discerning individuals, and customized travel experiences.",
+    icon: "diamond",
+  },
+  {
+    title: "Group Travel & Leisure Tours",
+    blurb: "Customized group journeys designed for memorable leisure and team experiences.",
+    icon: "group",
+  },
+  {
+    title: "Cruise Bookings",
+    blurb: "Exclusive cruise vacations with leading global cruise partners.",
+    icon: "cruise",
+  },
+  {
+    title: "International Air Travel Solutions",
+    blurb: "International and domestic ticketing with optimized routing.",
+    icon: "air",
+  },
+  {
+    title: "Hotel Reservations & Ground Handling",
+    blurb: "Worldwide accommodation, transfers and destination support services.",
+    icon: "hotel",
   },
 ];
 
-export const leadership = [
+/** Travel essentials offered to both audiences. */
+export const essentials: Service[] = [
   {
-    name: "Harsha Gunasekara",
-    role: "Chairman",
-    note: "Founder and Managing Director of Base HP",
-    image: harsha,
+    title: "Visa Consultation",
+    blurb: "Professional visa guidance and documentation support for all destinations.",
+    icon: "visa",
   },
   {
-    name: "Sameera Fernando",
-    role: "Director / CEO",
-    note: "25 years' experience in the travel industry",
-    image: sameera,
+    title: "Travel Insurance",
+    blurb: "Comprehensive protection and peace of mind throughout your journey.",
+    icon: "insurance",
+  },
+  {
+    title: "Airport Lounge Access",
+    blurb: "Premium lounge access for comfort, convenience and productivity while traveling.",
+    icon: "lounge",
+  },
+  {
+    title: "Chauffeur Services",
+    blurb: "Reliable executive transportation solutions for business and leisure travelers.",
+    icon: "chauffeur",
   },
 ];
 
-export const regions = [
-  { name: "USA", places: ["New York", "Los Angeles", "Chicago", "Houston", "Miami"] },
-  { name: "Canada", places: ["Toronto", "Vancouver", "Montreal", "Calgary"] },
+/** Corporate & Business — "What we manage". */
+export const corporateServices: Service[] = [
+  {
+    title: "Corporate Travel Management",
+    blurb: "End-to-end management for executive teams.",
+    icon: "corporate",
+  },
+  {
+    title: "Global Aviation Solutions",
+    blurb: "International and domestic ticketing with optimized routing.",
+    icon: "air",
+  },
+  {
+    title: "MICE",
+    blurb: "Meetings, Incentives, Conferences & Exhibitions — specialist handling of large-scale conferences and reward tours.",
+    icon: "mice",
+  },
+  {
+    title: "Corporate Incentive Tours",
+    blurb: "Reward and motivate teams with expertly curated incentive travel experiences.",
+    icon: "gift",
+  },
+  {
+    title: "Group Travel & Leisure Tours",
+    blurb: "Customized group journeys designed for memorable leisure and team experiences.",
+    icon: "group",
+  },
+  {
+    title: "Hotel Reservations & Ground Handling",
+    blurb: "Worldwide accommodation, transfers and destination support services.",
+    icon: "hotel",
+  },
+];
+
+/** The four promises along the foot of the deck's vision & mission page. */
+export const pillars: Service[] = [
+  { icon: "corporate", title: "Corporate Travel", blurb: "Smart solutions for modern businesses." },
+  { icon: "mice", title: "MICE & Incentives", blurb: "Engaging events. Lasting impact." },
+  { icon: "globe", title: "Leisure Travel", blurb: "Curated holidays. Cherished memories." },
+  { icon: "globe", title: "Global Connections", blurb: "Strong partnerships. Wider possibilities." },
+];
+
+/** Home — what the desk can put to work on any plan, personal or corporate. */
+export const readyToOffer = [
+  { icon: "air", label: "Air travel & ticketing" },
+  { icon: "hotel", label: "Hotels & ground handling" },
+  { icon: "visa", label: "Visa consultation" },
+  { icon: "insurance", label: "Travel insurance" },
+  { icon: "lounge", label: "Airport lounges" },
+  { icon: "chauffeur", label: "Chauffeur services" },
+];
+
+/** The deck's three promises. */
+export const principles = [
+  {
+    icon: "experience",
+    title: "Powered by experience",
+    description: "A team of veteran travel professionals, led by more than 25 years in the travel industry.",
+  },
+  {
+    icon: "excellence",
+    title: "Driven by excellence",
+    description: "Precision, efficiency and attention to detail — from a single ticket to a conference abroad.",
+  },
+  {
+    icon: "service",
+    title: "Focused on service",
+    description: "One travel desk for every part of the trip, with agents around the globe.",
+  },
+];
+
+/** The same promises as the corporate page words them. */
+export const corporatePrinciples = [
+  "A leadership team with 25+ years in the travel industry.",
+  "Seamless, prestigious and impeccably executed — every time.",
+  "Every journey reflects the standards of your organization.",
+];
+
+export type Continent = {
+  name: string;
+  lat: number;
+  lng: number;
+  groups: { name: string; countries: { name: string; cities: string[] }[] }[];
+};
+
+const countries = (names: string[]) => names.map((name) => ({ name, cities: [] }));
+
+/** Every place the desk covers, by continent — the destination explorer. */
+export const continents: Continent[] = [
+  {
+    name: "Africa",
+    lat: 0,
+    lng: 20,
+    groups: [
+      {
+        name: "North Africa",
+        countries: [{ name: "Morocco", cities: ["Marrakech", "Casablanca"] }, ...countries(["Egypt"])],
+      },
+      { name: "Eastern & Southern Africa", countries: countries(["Kenya", "South Africa"]) },
+    ],
+  },
+  { name: "Antarctica", lat: -80, lng: 0, groups: [] },
   {
     name: "Asia",
-    places: ["Singapore", "Thailand", "Malaysia", "China", "Japan", "India"],
-  },
-  {
-    name: "Middle East",
-    places: ["UAE", "Qatar", "Saudi Arabia", "Oman", "Bahrain", "Kuwait"],
+    lat: 30,
+    lng: 100,
+    groups: [
+      {
+        name: "South & Southeast Asia",
+        countries: [
+          { name: "Sri Lanka", cities: ["Colombo"] },
+          { name: "Singapore", cities: ["Singapore"] },
+          ...countries(["Thailand", "Malaysia", "India"]),
+        ],
+      },
+      {
+        name: "East Asia",
+        countries: [
+          { name: "China", cities: ["Shanghai", "Beijing", "Hong Kong", "Chongqing", "Suzhou", "Xi’an"] },
+          ...countries(["Japan"]),
+        ],
+      },
+      {
+        name: "Western Asia · Middle East",
+        countries: countries(["UAE", "Qatar", "Saudi Arabia", "Oman", "Bahrain", "Kuwait"]),
+      },
+    ],
   },
   {
     name: "Europe",
-    places: [
-      "United Kingdom",
-      "France",
-      "Germany",
-      "Italy",
-      "Netherlands",
-      "Switzerland",
+    lat: 48,
+    lng: 15,
+    groups: [
+      {
+        name: "Europe",
+        countries: [
+          { name: "Italy", cities: ["Rome", "Venice", "Florence", "Milan", "Manarola"] },
+          ...countries(["United Kingdom", "France", "Germany", "Netherlands", "Switzerland"]),
+        ],
+      },
     ],
   },
   {
-    name: "Australia & New Zealand",
-    places: ["Sydney", "Melbourne", "Brisbane", "Auckland"],
+    name: "North America",
+    lat: 40,
+    lng: -100,
+    groups: [
+      {
+        name: "North America",
+        countries: [
+          { name: "USA", cities: ["New York", "Los Angeles", "Chicago", "Houston", "Miami", "San Francisco"] },
+          { name: "Canada", cities: ["Toronto", "Vancouver", "Montreal", "Calgary"] },
+        ],
+      },
+    ],
   },
-  { name: "Africa", places: ["South Africa", "Kenya", "Morocco", "Egypt"] },
+  { name: "South America", lat: -15, lng: -60, groups: [] },
+  {
+    name: "Australia & Oceania",
+    lat: -25,
+    lng: 135,
+    groups: [
+      {
+        name: "Australia & New Zealand",
+        countries: [
+          { name: "Australia", cities: ["Sydney", "Melbourne", "Brisbane"] },
+          { name: "New Zealand", cities: ["Auckland"] },
+        ],
+      },
+    ],
+  },
 ];
 
-const destinationCount = regions.reduce((n, r) => n + r.places.length, 0);
-
-/** Figures drawn from the deck: the regional-coverage list, and the CEO's
- *  25 years in the travel industry. */
-export const headlineStats = [
-  { value: String(regions.length), label: "Regions covered" },
-  { value: `${destinationCount}+`, label: "Destinations" },
-  { value: "25+", label: "Years industry expertise" },
+/** Photographed destinations: the explorer's spotlight and the page tiles. */
+export const destinations = [
+  {
+    slug: "singapore",
+    name: "Singapore",
+    region: "Asia",
+    image: singapore,
+    lat: 1.35,
+    lng: 103.82,
+    places: ["Marina Bay", "Gardens by the Bay", "Chinatown", "Kampong Glam", "Singapore River", "Joo Chiat"],
+  },
+  {
+    slug: "italy",
+    name: "Italy",
+    region: "Europe",
+    image: italy,
+    lat: 40.63,
+    lng: 14.48,
+    places: ["Rome", "Venice", "Florence", "Milan", "Manarola"],
+  },
+  {
+    slug: "china",
+    name: "China",
+    region: "Asia",
+    image: china,
+    lat: 39.9,
+    lng: 116.41,
+    places: ["Shanghai", "Beijing", "Hong Kong", "Chongqing", "Suzhou", "Xi’an"],
+  },
+  {
+    slug: "morocco",
+    name: "Morocco",
+    region: "Africa",
+    image: morocco,
+    lat: 31.63,
+    lng: -7.98,
+    places: ["Marrakech", "Casablanca"],
+  },
+  {
+    slug: "san-francisco",
+    name: "San Francisco",
+    region: "USA",
+    image: sanFrancisco,
+    lat: 37.77,
+    lng: -122.42,
+    places: ["Golden Gate", "Painted Ladies", "Embarcadero", "Twin Peaks", "Lombard Street", "North Beach"],
+  },
 ];
 
-/** "Our global reach includes" — the eight capability chips on the network page. */
-export const globalReach = [
-  "International Air Travel Solutions",
-  "Worldwide Hotel & Resort Partnerships",
-  "Corporate Incentive Tours",
-  "Conferences & Events (MICE)",
-  "Visa Consultation Services",
-  "Ground Transportation & Chauffeur Services",
-  "Airport Lounge Access",
-  "Travel Insurance Solutions",
+export type Destination = (typeof destinations)[number];
+
+/** Where every route on the globe starts. */
+export const home = { name: "Colombo", country: "Sri Lanka", lat: 6.9271, lng: 79.8612 };
+
+/** How an enquiry becomes a journey. */
+export const process = [
+  { n: "01", title: "Tell us", blurb: "Share the destination, dates, group size and occasion." },
+  { n: "02", title: "We propose", blurb: "A tailored itinerary and quotation, refined with you." },
+  { n: "03", title: "We arrange", blurb: "Flights, hotels, visas, insurance, transfers and lounges." },
+  { n: "04", title: "You travel", blurb: "With our team and agents around the globe behind every journey." },
+];
+
+export const leadership = [
+  { name: "Harsha Gunasekara", role: "Chairman", note: "Founder and Managing Director of Base HP", image: harsha },
+  { name: "Sameera Fernando", role: "Director / CEO", note: "25 years' experience in the travel industry", image: sameera },
 ];
 
 /** "Memories we created …" — photographs from the deck's closing pages. */
-export type Memory = {
-  image: string;
-  /** Intrinsic size, so the wall reserves each photo's space before it loads. */
-  width: number;
-  height: number;
-  /** Only set where the deck's coverage list names the country and the
-   *  photograph is unmistakably there; otherwise the wall shows a neutral title. */
-  country?: string;
-  /** The kind of tour, in the deck's own service vocabulary. */
-  note: string;
-  /** Which page the photograph belongs on besides Home. */
-  audience: "corporate" | "personal";
-};
-
-export const memories: Memory[] = [
-  { image: memory01, width: 1307, height: 813, country: "China", note: "Corporate incentive tour", audience: "corporate" },
-  { image: memory02, width: 794, height: 1059, note: "Corporate incentive tour", audience: "corporate" },
-  { image: memory03, width: 1048, height: 810, note: "Cruise", audience: "personal" },
-  { image: memory04, width: 842, height: 627, country: "Thailand", note: "Group tour", audience: "personal" },
-  { image: memory05, width: 1280, height: 720, country: "China", note: "Group tour", audience: "corporate" },
-  { image: memory06, width: 666, height: 549, country: "Thailand", note: "Group tour", audience: "personal" },
-  { image: memory07, width: 752, height: 995, note: "Corporate incentive tour", audience: "corporate" },
-  { image: memory08, width: 807, height: 606, note: "Leisure tour", audience: "personal" },
+export const memories = [
+  { image: memory01, place: "China", type: "Corporate incentive tour", alt: "Client group on a corporate incentive tour in China" },
+  { image: memory02, place: "With our clients", type: "Corporate incentive tour", alt: "Client group on a corporate incentive tour" },
+  { image: memory03, place: "With our clients", type: "Cruise", alt: "Client group on a cruise" },
+  { image: memory04, place: "Thailand", type: "Group tour", alt: "Client group on a group tour in Thailand" },
+  { image: memory05, place: "China", type: "Group tour", alt: "Client group on a group tour in China" },
+  { image: memory06, place: "Thailand", type: "Group tour", alt: "Client group on a group tour in Thailand" },
+  { image: memory07, place: "With our clients", type: "Corporate incentive tour", alt: "Client group on a corporate incentive tour" },
+  { image: memory08, place: "With our clients", type: "Leisure tour", alt: "Client group on a leisure tour" },
 ];
 
-/* ── Personal Travels / Corporate & Business ────────────────────────────────
-   The deck's two service lists, regrouped by who is travelling. Wording is the
-   deck's; only the grouping and the short section intros are ours. */
-
-export const personalServices: Solution[] = [
+export const terms = [
   {
-    icon: "location",
-    title: "Leisure Travel",
-    detail: "Curated holidays. Cherished memories.",
-  },
-  {
-    icon: "diamond",
-    title: "Luxury & FIT Travel",
-    detail:
-      "Tailor-made itineraries for discerning individuals, and customized travel experiences.",
-  },
-  {
-    icon: "group",
-    title: "Group Travel & Leisure Tours",
-    detail:
-      "Customized group journeys designed for memorable leisure and team experiences.",
-  },
-  {
-    icon: "cruise",
-    title: "Cruise Bookings",
-    detail: "Exclusive cruise vacations with leading global cruise partners.",
-  },
-  {
-    icon: "air",
-    title: "International Air Travel Solutions",
-    detail: "International and domestic ticketing with optimized routing.",
-  },
-  {
-    icon: "hotel",
-    title: "Hotel Reservations & Ground Handling",
-    detail:
-      "Worldwide accommodation, transfers and destination support services.",
-  },
-];
-
-/** Travel essentials that apply to both audiences. */
-export const essentials: Solution[] = [
-  {
-    icon: "visa",
-    title: "Visa Consultation",
-    detail:
-      "Professional visa guidance and documentation support for all destinations.",
-  },
-  {
-    icon: "insurance",
-    title: "Travel Insurance",
-    detail:
-      "Comprehensive protection and peace of mind throughout your journey.",
-  },
-  {
-    icon: "lounge",
-    title: "Airport Lounge Access",
-    detail:
-      "Premium lounge access for comfort, convenience and productivity while traveling.",
-  },
-  {
-    icon: "chauffeur",
-    title: "Chauffeur Services",
-    detail:
-      "Reliable executive transportation solutions for business and leisure travelers.",
-  },
-];
-
-export const corporateServices: Solution[] = [
-  {
-    icon: "corporate",
-    title: "Corporate Travel Management",
-    detail: "End-to-end management for executive teams.",
-  },
-  {
-    icon: "air",
-    title: "Global Aviation Solutions",
-    detail: "International and domestic ticketing with optimized routing.",
-  },
-  {
-    icon: "mice",
-    title: "MICE",
-    detail:
-      "Meetings, Incentives, Conferences & Exhibitions — specialist handling of large-scale conferences and reward tours.",
-  },
-  {
-    icon: "gift",
-    title: "Corporate Incentive Tours",
-    detail:
-      "Reward and motivate teams with expertly curated incentive travel experiences.",
-  },
-  {
-    icon: "group",
-    title: "Group Travel & Leisure Tours",
-    detail:
-      "Customized group journeys designed for memorable leisure and team experiences.",
-  },
-  {
-    icon: "hotel",
-    title: "Hotel Reservations & Ground Handling",
-    detail:
-      "Worldwide accommodation, transfers and destination support services.",
-  },
-];
-
-/** How an enquiry becomes a journey. Describes the deck's services in order of
- *  use; no service-level promises (response times, 24/7) the client hasn't made. */
-export const process = [
-  {
-    title: "Tell us",
-    detail: "Share the destination, dates, group size and occasion.",
-  },
-  {
-    title: "We propose",
-    detail: "A tailored itinerary and quotation, refined with you.",
-  },
-  {
-    title: "We arrange",
-    detail: "Flights, hotels, visas, insurance, transfers and lounges.",
-  },
-  {
-    title: "You travel",
-    detail: "With our team and agents around the globe behind every journey.",
-  },
-];
-
-export const personalEnquiry: EnquiryField[] = [
-  { key: "name", label: "Your name", required: true },
-  { key: "email", label: "Email", type: "email", required: true, placeholder: "you@example.com" },
-  { key: "phone", label: "Phone / WhatsApp", type: "tel", placeholder: "+94 …" },
-  {
-    key: "interest",
-    label: "I'm interested in",
-    type: "select",
-    options: [
-      "Holiday / leisure trip",
-      "Group tour",
-      "Cruise",
-      "Luxury / tailor-made (FIT)",
-      "Flights only",
-      "Visa / insurance only",
+    heading: "About these terms",
+    body: [
+      "These terms apply to our website and travel services, including flights, holidays, hotels, transfers, visa assistance and corporate or group travel. By making a booking, you accept these terms and the booking-specific conditions provided before payment. Anyone booking for others must be authorised to do so and share the applicable conditions with them.",
     ],
   },
-  { key: "where", label: "Destination", placeholder: "Thailand, Japan, Europe…" },
-  { key: "when", label: "Travel dates", placeholder: "December, 7 nights" },
-  { key: "travellers", label: "Travellers", placeholder: "2 adults, 1 child" },
-  { key: "notes", label: "Anything else", type: "textarea", placeholder: "Budget, hotel style, special occasions…" },
-];
-
-export const corporateEnquiry: EnquiryField[] = [
-  { key: "name", label: "Your name", required: true },
-  { key: "company", label: "Company", required: true },
-  { key: "email", label: "Work email", type: "email", required: true, placeholder: "you@company.com" },
-  { key: "phone", label: "Phone", type: "tel", placeholder: "+94 …" },
   {
-    key: "requirement",
-    label: "Requirement",
-    type: "select",
-    options: [
-      "Corporate travel management",
-      "MICE / conference / event",
-      "Corporate incentive tour",
-      "Air ticketing",
-      "Visa, insurance, lounge or chauffeur",
+    heading: "Bookings and payments",
+    body: [
+      "Quotations are subject to availability and valid for the period stated. A booking is confirmed only when we receive the required payment and issue written confirmation; flights require ticket issuance. Deposits, balance deadlines, currency and any additional charges will be stated before payment. Late payment may result in cancellation and applicable charges.",
     ],
   },
-  { key: "size", label: "Number of travellers", placeholder: "40 pax" },
-  { key: "where", label: "Destination", placeholder: "Singapore, UAE, Europe…" },
-  { key: "when", label: "Dates", placeholder: "Q1 2027, 5 days" },
-  { key: "notes", label: "The brief", type: "textarea", placeholder: "Occasion, budget, programme, anything the itinerary has to work around…" },
-];
-
-export const generalEnquiry: EnquiryField[] = [
-  { key: "name", label: "Your name", required: true },
-  { key: "email", label: "Email", type: "email", required: true, placeholder: "you@example.com" },
-  { key: "phone", label: "Phone", type: "tel", placeholder: "+94 …" },
-  { key: "topic", label: "About", type: "select", options: ["Personal travel", "Corporate & business travel", "Something else"] },
-  { key: "notes", label: "Message", type: "textarea", required: true },
+  {
+    heading: "Prices and inclusions",
+    body: [
+      "Only services listed in your confirmation are included. Advertised “from” prices and offers are subject to availability and stated restrictions. Prices may change before confirmation due to supplier rates, taxes or exchange rates. After confirmation, changes apply only where permitted by the agreed booking conditions and applicable law.",
+    ],
+  },
+  {
+    heading: "Travel suppliers",
+    body: [
+      "Airlines, hotels, transport providers and other suppliers have their own conditions, which will be supplied or identified before booking. Where we arrange their services, we act as a booking agent. Where we organise a package ourselves, we remain responsible for our contractual obligations. Airline baggage, flight changes, hotel check-in, special requests and similar matters are subject to the relevant supplier's rules.",
+    ],
+  },
+  {
+    heading: "Changes, cancellations and refunds",
+    body: [
+      "Please submit requests in writing through our official contact channels. Changes depend on availability and may incur fare differences, supplier penalties and our disclosed service fees. Cancellation charges follow the conditions provided before payment; some bookings are non-refundable. No-shows, unused services and early departures may receive no refund. Service fees are non-refundable only where disclosed, earned and legally permitted.",
+      "We will explain any deductions and the expected refund process. Supplier refunds depend on supplier processing, and we will pass on funds promptly once received. This does not limit any refund obligation we have under applicable law.",
+    ],
+  },
+  {
+    heading: "Passports, visas and traveller details",
+    body: [
+      "Travellers must provide accurate information, check booking documents promptly, and meet passport, visa, transit, health and entry requirements. Names must match passports. Corrections may incur charges. Our visa assistance does not guarantee approval, processing time or entry; these decisions belong to the relevant authorities. Visa refusal does not automatically make other travel bookings refundable.",
+    ],
+  },
+  {
+    heading: "Health, insurance and conduct",
+    body: [
+      "Please disclose assistance, accessibility or dietary needs before booking; fulfilment requires confirmation. Appropriate travel insurance is strongly recommended and may be compulsory for certain trips. Travellers must follow safety instructions, local laws and check-in times. Serious misconduct or unsafe behaviour may result in removal from a service, with refunds governed by applicable conditions and law.",
+    ],
+  },
+  {
+    heading: "Travel disruptions",
+    body: [
+      "Weather, government restrictions, strikes, airline changes and other events beyond reasonable control may affect travel. We will communicate significant changes when informed and assist with available alternatives or refunds. Material package changes, substitutions and minimum group requirements are governed by the conditions disclosed before booking. Additional costs and refunds remain subject to those conditions and applicable law.",
+    ],
+  },
+  {
+    heading: "Responsibility and liability",
+    body: [
+      "We will exercise reasonable care in providing our services. To the extent permitted by law, we are not responsible for independent suppliers' failures or events beyond our reasonable control, except where we have a legal or contractual responsibility. Nothing in these terms excludes liability for our fraud, negligence or any responsibility that cannot lawfully be excluded, or removes your statutory rights.",
+    ],
+  },
+  {
+    heading: "Website and privacy",
+    body: [
+      "Use our website lawfully and do not make fraudulent bookings or reproduce protected content commercially without permission. Website information and images are illustrative; your written booking confirmation defines the services purchased. External websites have their own terms and privacy practices. Our separate Privacy Policy explains how we handle personal information and share it with suppliers and authorities for travel arrangements.",
+    ],
+  },
+  {
+    heading: "Complaints, law and updates",
+    body: [
+      "Please report problems promptly to us and the relevant supplier so we can help, then send any unresolved complaint in writing with your booking details. These terms are governed by Sri Lankan law, and disputes may be brought before the competent courts of Sri Lanka, subject to mandatory legal rights. Updates apply prospectively; confirmed bookings retain the terms accepted when booked unless otherwise lawfully agreed.",
+    ],
+  },
 ];

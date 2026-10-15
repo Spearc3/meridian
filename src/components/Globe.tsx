@@ -1,82 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import earthMap from "../assets/earth_atmos_2048.jpg";
-import earthNormal from "../assets/earth_normal_2048.jpg";
-import earthSpecular from "../assets/earth_specular_2048.jpg";
-import earthMapSmall from "../assets/earth_atmos_1024.jpg";
-import earthNormalSmall from "../assets/earth_normal_1024.jpg";
-import earthSpecularSmall from "../assets/earth_specular_1024.jpg";
+import earthNormal from "../assets/earth_normal_1024.jpg";
+import earthSpecular from "../assets/earth_specular_1024.jpg";
 import earthClouds from "../assets/earth_clouds_1024.png";
-import { regions } from "../tpl";
 
-export type GlobePoint = {
-  name: string;
-  region: string;
-  lat: number;
-  lon: number;
+export type GlobePlace = { name: string; country: string; lat: number; lng: number };
+
+export type GlobeApi = {
+  /** Turns the globe to `place` and draws the route out from home. */
+  flyTo: (place: { lat: number; lng: number }) => void;
 };
-
-/** Where each destination in the deck's regional-coverage list sits. Country
- *  entries are pinned at their capital or main gateway city. */
-const coordinates: Record<string, [number, number]> = {
-  "New York": [40.71, -74.01],
-  "Los Angeles": [34.05, -118.24],
-  Chicago: [41.88, -87.63],
-  Houston: [29.76, -95.37],
-  Miami: [25.76, -80.19],
-  Toronto: [43.65, -79.38],
-  Vancouver: [49.28, -123.12],
-  Montreal: [45.5, -73.57],
-  Calgary: [51.05, -114.07],
-  Singapore: [1.35, 103.82],
-  Thailand: [13.76, 100.5],
-  Malaysia: [3.14, 101.69],
-  China: [39.9, 116.41],
-  Japan: [35.68, 139.69],
-  India: [28.61, 77.21],
-  UAE: [25.2, 55.27],
-  Qatar: [25.29, 51.53],
-  "Saudi Arabia": [24.71, 46.68],
-  Oman: [23.59, 58.41],
-  Bahrain: [26.23, 50.59],
-  Kuwait: [29.38, 47.99],
-  "United Kingdom": [51.51, -0.13],
-  France: [48.86, 2.35],
-  Germany: [52.52, 13.4],
-  Italy: [41.9, 12.5],
-  Netherlands: [52.37, 4.9],
-  Switzerland: [47.38, 8.54],
-  Sydney: [-33.87, 151.21],
-  Melbourne: [-37.81, 144.96],
-  Brisbane: [-27.47, 153.03],
-  Auckland: [-36.85, 174.76],
-  "South Africa": [-26.2, 28.05],
-  Kenya: [-1.29, 36.82],
-  Morocco: [34.02, -6.84],
-  Egypt: [30.04, 31.24],
-};
-
-/* Home desk first, then a pin for every destination the deck lists — built
-   from the same `regions` list the home page prints under the globe. */
-export const globePoints: GlobePoint[] = [
-  { name: "Colombo", region: "Sri Lanka — our desk", lat: 6.93, lon: 79.86 },
-  ...regions.flatMap((region) =>
-    region.places
-      .filter((place) => place in coordinates)
-      .map((place) => ({
-        name: place,
-        region: region.name,
-        lat: coordinates[place][0],
-        lon: coordinates[place][1],
-      })),
-  ),
-];
 
 const RADIUS = 1.6;
 
-function toVector(lat: number, lon: number, radius: number) {
+function toVector(lat: number, lng: number, radius: number) {
   const phi = (90 - lat) * (Math.PI / 180);
-  const theta = (lon + 180) * (Math.PI / 180);
+  const theta = (lng + 180) * (Math.PI / 180);
   return new THREE.Vector3(
     -radius * Math.sin(phi) * Math.cos(theta),
     radius * Math.cos(phi),
@@ -84,425 +24,434 @@ function toVector(lat: number, lon: number, radius: number) {
   );
 }
 
-export default function Globe() {
+/** Points along the great circle from `from` to `to`, lifted into an arc. */
+function arc(from: THREE.Vector3, to: THREE.Vector3, segments = 96) {
+  const radius = from.length();
+  const a = from.clone().normalize();
+  const b = to.clone().normalize();
+  const angle = a.angleTo(b);
+  const axis = new THREE.Vector3().crossVectors(a, b).normalize();
+  if (axis.lengthSq() < 0.001) axis.set(0, 1, 0);
+  return Array.from({ length: segments + 1 }, (_, i) => {
+    const t = i / segments;
+    return a
+      .clone()
+      .applyAxisAngle(axis, angle * t)
+      .multiplyScalar(radius + Math.sin(Math.PI * t) * 0.32);
+  });
+}
+
+export function Globe({
+  destinations,
+  home,
+  onReady,
+  className = "",
+}: {
+  destinations: GlobePlace[];
+  home: GlobePlace;
+  onReady?: (api: GlobeApi) => void;
+  className?: string;
+}) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState<GlobePoint | null>(null);
+  const [hovered, setHovered] = useState<{ name: string; region: string } | null>(null);
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const styles = getComputedStyle(document.documentElement);
+    const token = (name: string) => new THREE.Color(styles.getPropertyValue(name).trim());
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const points = [
+      { name: home.name, region: `${home.country} — our desk`, lat: home.lat, lng: home.lng },
+      ...destinations.map((d) => ({ name: d.name, region: d.country, lat: d.lat, lng: d.lng })),
+    ];
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
     camera.position.z = 5.4;
-
-    // Touch devices get a 1.5x buffer: on a ~350px phone globe that is already
-    // sharper than the eye resolves, at roughly half the fill cost of 2-3x.
-    const coarse = window.matchMedia("(pointer: coarse)").matches;
-    const pixelRatio = Math.min(window.devicePixelRatio, coarse ? 1.5 : 2);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(pixelRatio);
-    // ~350px across on a phone: 64 segments are as round as 96 there, at under
-    // half the vertices per frame for the surface and cloud shells.
-    const segments = coarse ? 64 : 96;
-    // Horizontal drags spin the globe; vertical swipes still scroll the page.
-    // Without this the browser claims the gesture mid-drag to scroll, which is
-    // what made touch rotation stall and jump.
-    renderer.domElement.style.touchAction = "pan-y";
-    // The Blue Marble map is already low-key; tone mapping only crushes it further.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.5 : 2));
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // Vertical swipes still scroll the page on phones.
+    renderer.domElement.style.touchAction = "pan-y";
     mount.appendChild(renderer.domElement);
 
-    const world = new THREE.Group();
-    world.rotation.x = 0.35;
-    world.rotation.y = -1.1;
-    scene.add(world);
-
-    // Axial tilt, so the terminator falls where you expect it to.
+    const segments = coarse ? 64 : 96;
+    // Outer group takes the drag; the inner one holds Earth's axial tilt.
+    const spin = new THREE.Group();
+    spin.rotation.x = 0.35;
+    spin.rotation.y = -1.1;
+    scene.add(spin);
     const earth = new THREE.Group();
     earth.rotation.z = (23.4 * Math.PI) / 180;
-    world.add(earth);
+    spin.add(earth);
 
-    // Half of the map wraps the visible hemisphere, so a globe drawn at up to
-    // ~640 device px shows no difference between the 1024 and 2048 textures —
-    // the smaller set is a fifth of the download and GPU upload.
-    const small = mount.clientWidth * pixelRatio <= 640;
     const loader = new THREE.TextureLoader();
-    const color = loader.load(small ? earthMapSmall : earthMap);
-    color.colorSpace = THREE.SRGBColorSpace;
+    const map = loader.load(earthMap);
+    map.colorSpace = THREE.SRGBColorSpace;
     const clouds = loader.load(earthClouds);
     clouds.colorSpace = THREE.SRGBColorSpace;
-
-    const oceanMask = loader.load(small ? earthSpecularSmall : earthSpecular);
-    const waveUniforms = { uTime: { value: 0 }, uOceanMask: { value: oceanMask } };
-
-    const surfaceMaterial = new THREE.MeshPhongMaterial({
-      map: color,
-      normalMap: loader.load(small ? earthNormalSmall : earthNormal),
+    const specular = loader.load(earthSpecular);
+    const uniforms = { uTime: { value: 0 }, uOceanMask: { value: specular } };
+    const surface = new THREE.MeshPhongMaterial({
+      map,
+      normalMap: loader.load(earthNormal),
       normalScale: new THREE.Vector2(0.85, 0.85),
-      specularMap: oceanMask,
-      // Kept very dark: any more and the sea turns into silver foil.
-      specular: new THREE.Color("#16303f"),
+      specularMap: specular,
+      specular: token("--globe-specular"),
       shininess: 55,
     });
-
-    // The specular map is white over water and black over land, so it doubles as
-    // an ocean mask: tint the sea a lighter teal and roll a slow swell across it,
-    // leaving the continents untouched.
-    surfaceMaterial.onBeforeCompile = (shader) => {
-      shader.uniforms.uTime = waveUniforms.uTime;
-      shader.uniforms.uOceanMask = waveUniforms.uOceanMask;
-
+    // Brighter land, and a slow swell across the oceans (the specular map
+    // doubles as the ocean mask).
+    surface.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = uniforms.uTime;
+      shader.uniforms.uOceanMask = uniforms.uOceanMask;
       shader.fragmentShader = shader.fragmentShader
         .replace(
           "void main() {",
-          `
-          uniform float uTime;
+          `uniform float uTime;
           uniform sampler2D uOceanMask;
-
           float swell(vec2 uv, float time) {
             float a = sin(uv.x * 90.0 + time * 0.6);
             float b = sin(uv.y * 64.0 - time * 0.45);
             float c = sin((uv.x + uv.y) * 48.0 + time * 0.33);
             return (a * b + c) * 0.5;
           }
-
-          void main() {
-          `,
+          void main() {`,
         )
         .replace(
           "#include <map_fragment>",
-          `
-          #include <map_fragment>
+          `#include <map_fragment>
           float ocean = texture2D(uOceanMask, vMapUv).r;
           float wave = swell(vMapUv, uTime);
           vec3 oceanShallow = vec3(0.129, 0.420, 0.729);
           vec3 oceanDeep = vec3(0.031, 0.169, 0.451);
-          // Land is dark in the Blue Marble map; lift it so it holds up against
-          // the lightened sea.
           diffuseColor.rgb *= mix(1.35, 1.0, ocean);
           vec3 water = mix(oceanDeep, oceanShallow, 0.5 + wave * 0.11);
-          diffuseColor.rgb = mix(diffuseColor.rgb, water, ocean * 0.8);
-          `,
+          diffuseColor.rgb = mix(diffuseColor.rgb, water, ocean * 0.8);`,
         );
     };
-
-    const surface = new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS, segments, segments),
-      surfaceMaterial,
-    );
-    earth.add(surface);
+    earth.add(new THREE.Mesh(new THREE.SphereGeometry(RADIUS, segments, segments), surface));
 
     const cloudLayer = new THREE.Mesh(
       new THREE.SphereGeometry(RADIUS * 1.012, segments, segments),
-      new THREE.MeshPhongMaterial({
-        map: clouds,
-        transparent: true,
-        opacity: 0.42,
-        depthWrite: false,
-      }),
+      new THREE.MeshPhongMaterial({ map: clouds, transparent: true, opacity: 0.42, depthWrite: false }),
     );
     earth.add(cloudLayer);
 
-    // Sun: a single hard key light, offset toward the camera so most of the
-    // near hemisphere is daylit and the terminator falls across the left limb.
-    const sun = new THREE.DirectionalLight(0xfff4e0, 2.3);
+    const sun = new THREE.DirectionalLight(token("--globe-sun"), 2.3);
     sun.position.set(-1.6, 1.1, 4.2);
     scene.add(sun);
-    // Enough fill that the night side reads as deep blue, not a void — but low
-    // enough that the globe keeps its modelling instead of going flat and milky.
-    scene.add(new THREE.AmbientLight(0x6d90a8, 0.6));
-    const rimLight = new THREE.DirectionalLight(0x7fc6d8, 0.45);
-    rimLight.position.set(3, -1, -2.5);
-    scene.add(rimLight);
+    scene.add(new THREE.AmbientLight(token("--globe-ambient"), 0.6));
+    const rim = new THREE.DirectionalLight(token("--globe-atmosphere"), 0.45);
+    rim.position.set(3, -1, -2.5);
+    scene.add(rim);
 
-    const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(RADIUS * 1.16, 64, 64),
-      new THREE.ShaderMaterial({
-        transparent: true,
-        side: THREE.BackSide,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        uniforms: {
-          uColor: { value: new THREE.Color("#6fc4e0") },
-          uSun: { value: sun.position.clone().normalize() },
-        },
-        vertexShader: `
-          varying vec3 vNormal;
-          varying vec3 vWorldNormal;
-          void main() {
-            vNormal = normalize(normalMatrix * normal);
-            vWorldNormal = normalize(mat3(modelMatrix) * normal);
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform vec3 uColor;
-          uniform vec3 uSun;
-          varying vec3 vNormal;
-          varying vec3 vWorldNormal;
-          void main() {
-            float rim = pow(0.68 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.2);
-            // Scatter concentrates on the lit limb, as it does from orbit.
-            float lit = clamp(dot(vWorldNormal, uSun) * 0.5 + 0.62, 0.0, 1.0);
-            gl_FragColor = vec4(uColor, 1.0) * rim * lit * 1.5;
-          }
-        `,
-      }),
-    );
-    world.add(atmosphere);
-
-    // Destination markers.
-    const markers = new THREE.Group();
-    earth.add(markers);
-    const markerGeometry = new THREE.SphereGeometry(0.028, 16, 16);
-    const markerColor = new THREE.Color("#ffd79a");
-
-    globePoints.forEach((point, i) => {
-      const position = toVector(point.lat, point.lon, RADIUS * 1.015);
-
-      const marker = new THREE.Mesh(
-        markerGeometry,
-        new THREE.MeshBasicMaterial({ color: markerColor }),
-      );
-      marker.position.copy(position);
-      marker.userData = { index: i };
-      markers.add(marker);
-
-      const halo = new THREE.Mesh(
-        new THREE.SphereGeometry(0.055, 16, 16),
-        new THREE.MeshBasicMaterial({
-          color: markerColor,
+    // Atmosphere: a back-faced shell glowing at the limb, brighter on the sunlit side.
+    spin.add(
+      new THREE.Mesh(
+        new THREE.SphereGeometry(RADIUS * 1.16, 64, 64),
+        new THREE.ShaderMaterial({
           transparent: true,
-          opacity: 0.22,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
           depthWrite: false,
+          uniforms: {
+            uColor: { value: token("--globe-atmosphere") },
+            uSun: { value: sun.position.clone().normalize() },
+          },
+          vertexShader: `varying vec3 vNormal; varying vec3 vWorldNormal;
+            void main() {
+              vNormal = normalize(normalMatrix * normal);
+              vWorldNormal = normalize(mat3(modelMatrix) * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }`,
+          fragmentShader: `uniform vec3 uColor; uniform vec3 uSun; varying vec3 vNormal; varying vec3 vWorldNormal;
+            void main() {
+              float rim = pow(max(0.0, 0.68 - dot(vNormal, vec3(0.0, 0.0, 1.0))), 3.2);
+              float lit = clamp(dot(vWorldNormal, uSun) * 0.5 + 0.62, 0.0, 1.0);
+              gl_FragColor = vec4(uColor, 1.0) * rim * lit * 1.5;
+            }`,
         }),
+      ),
+    );
+
+    const pins = new THREE.Group();
+    earth.add(pins);
+    const pinGeometry = new THREE.SphereGeometry(0.028, 16, 16);
+    const haloGeometry = new THREE.SphereGeometry(0.055, 16, 16);
+    const pinColor = token("--globe-pin");
+    points.forEach((point, index) => {
+      const position = toVector(point.lat, point.lng, RADIUS * 1.015);
+      const pin = new THREE.Mesh(pinGeometry, new THREE.MeshBasicMaterial({ color: pinColor }));
+      pin.position.copy(position);
+      pin.userData = { index };
+      pins.add(pin);
+      const halo = new THREE.Mesh(
+        haloGeometry,
+        new THREE.MeshBasicMaterial({ color: pinColor, transparent: true, opacity: 0.22, depthWrite: false }),
       );
       halo.position.copy(position);
-      halo.userData = { halo: true, phase: i * 0.7 };
-      markers.add(halo);
+      halo.userData = { halo: true, phase: index * 0.7 };
+      pins.add(halo);
     });
+
+    // The route from home, drawn out over 2.6s with a plane dot at its tip.
+    const routeGeometry = new THREE.BufferGeometry();
+    const routeMaterial = new THREE.LineBasicMaterial({ color: token("--globe-flight"), transparent: true, opacity: 0.7 });
+    const route = new THREE.Line(routeGeometry, routeMaterial);
+    route.visible = false;
+    earth.add(route);
+    const plane = new THREE.Mesh(new THREE.SphereGeometry(0.022, 12, 12), new THREE.MeshBasicMaterial({ color: pinColor }));
+    plane.visible = false;
+    earth.add(plane);
+    let routeCurve: THREE.CatmullRomCurve3 | null = null;
+    let routeStart = 0;
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
     let pointerInside = false;
-    // Hit-testing 36 markers is only needed when the pointer has moved; after a
-    // tap on a touch screen the pointer otherwise "stays inside" indefinitely.
     let pointerMoved = false;
-
     let dragging = false;
     let lastX = 0;
     let lastY = 0;
-    let velocity = 0.0016;
-    let tiltVelocity = 0;
-
-    // Any touch, drag or hover holds the globe still so pins can be read; it
-    // picks its slow spin back up after RESUME_MS without interaction.
-    const DRIFT = 0.0016;
-    const RESUME_MS = 5000;
+    let spinY = reduced ? 0 : 0.0016;
+    let spinX = 0;
     let lastInteraction = -Infinity;
-    let drift = 1; // 0 = held still, 1 = idle spin (eased, never snaps)
+    let autoSpin = 1;
+    let dragDX = 0;
+    let dragDY = 0;
+    let velocityX = 0;
+    let velocityY = 0;
+    let lastMoveTime = 0;
+    let activePointer: number | null = null;
+    let flight: { fromX: number; fromY: number; toX: number; toY: number; start: number; dur: number } | null = null;
     const touched = () => {
       lastInteraction = performance.now();
     };
 
-    // Drag input is collected here and applied once per frame in tick(), so
-    // touch screens (which can fire pointermove faster or slower than the
-    // display) rotate in even steps. Flick speed is a smoothed px/ms average
-    // over recent moves, not the last single event, so the coast is even too.
-    const ROTATE_PER_PX = 0.005;
-    let activePointer: number | null = null;
-    let pendingX = 0;
-    let pendingY = 0;
-    let dragVX = 0;
-    let dragVY = 0;
-    let lastMoveTime = 0;
-
-    const onPointerMove = (e: PointerEvent) => {
+    const onMove = (e: PointerEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       pointerInside = true;
       pointerMoved = true;
       touched();
-
       if (dragging && e.pointerId === activePointer) {
         const dx = e.clientX - lastX;
         const dy = e.clientY - lastY;
-        pendingX += dx;
-        pendingY += dy;
+        dragDX += dx;
+        dragDY += dy;
         const dt = Math.max(1, e.timeStamp - lastMoveTime);
-        dragVX = dragVX * 0.7 + (dx / dt) * 0.3;
-        dragVY = dragVY * 0.7 + (dy / dt) * 0.3;
+        velocityX = velocityX * 0.7 + (dx / dt) * 0.3;
+        velocityY = velocityY * 0.7 + (dy / dt) * 0.3;
         lastX = e.clientX;
         lastY = e.clientY;
         lastMoveTime = e.timeStamp;
       }
     };
-
-    const onPointerDown = (e: PointerEvent) => {
+    const onDown = (e: PointerEvent) => {
       touched();
-      // One finger drives; a second one doesn't hijack the drag.
-      if (activePointer !== null) return;
-      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (activePointer !== null || (e.pointerType === "mouse" && e.button !== 0)) return;
       activePointer = e.pointerId;
       dragging = true;
+      flight = null;
       lastX = e.clientX;
       lastY = e.clientY;
       lastMoveTime = e.timeStamp;
-      dragVX = dragVY = 0;
-      velocity = tiltVelocity = 0;
+      velocityX = velocityY = 0;
+      spinY = spinX = 0;
       renderer.domElement.setPointerCapture(e.pointerId);
     };
-
-    // Up, cancel (the browser took the gesture to scroll) or lost capture all
-    // end the drag the same way, so it can never get stuck "held".
-    const onPointerUp = (e: PointerEvent) => {
+    const onUp = (e: PointerEvent) => {
       touched();
       if (e.pointerId !== activePointer) return;
       activePointer = null;
       dragging = false;
-      // Only a release that is still moving carries momentum (~7% of drag
-      // speed, per frame); lifting a resting finger just stops.
-      const moving = e.timeStamp - lastMoveTime < 80;
-      velocity = moving ? dragVX * 16.7 * 0.00035 : 0;
-      tiltVelocity = moving ? dragVY * 16.7 * 0.00035 : 0;
+      // A flick keeps the globe turning; a drag that paused before release doesn't.
+      const flicked = e.timeStamp - lastMoveTime < 80;
+      spinY = flicked && !reduced ? velocityX * 16.7 * 35e-5 : 0;
+      spinX = flicked && !reduced ? velocityY * 16.7 * 35e-5 : 0;
     };
-
-    const onPointerLeave = () => {
+    const onLeave = () => {
       pointerInside = false;
       setHovered(null);
     };
-
-    renderer.domElement.addEventListener("pointermove", onPointerMove);
-    renderer.domElement.addEventListener("pointerdown", onPointerDown);
-    renderer.domElement.addEventListener("pointerup", onPointerUp);
-    renderer.domElement.addEventListener("pointercancel", onPointerUp);
-    renderer.domElement.addEventListener("lostpointercapture", onPointerUp);
-    renderer.domElement.addEventListener("pointerleave", onPointerLeave);
+    const canvas = renderer.domElement;
+    canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerdown", onDown);
+    canvas.addEventListener("pointerup", onUp);
+    canvas.addEventListener("pointercancel", onUp);
+    canvas.addEventListener("lostpointercapture", onUp);
+    canvas.addEventListener("pointerleave", onLeave);
 
     const resize = () => {
-      const size = mount.clientWidth;
-      renderer.setSize(size, size, false);
-      renderer.domElement.style.width = "100%";
-      renderer.domElement.style.height = "100%";
-      camera.aspect = 1;
+      const width = mount.clientWidth;
+      const height = mount.clientHeight;
+      if (!width || !height) return;
+      renderer.setSize(width, height, false);
+      canvas.style.width = "100%";
+      canvas.style.height = "100%";
+      camera.aspect = width / height;
+      // Pull back on portrait stages so the whole globe still fits across.
+      camera.position.z = 5.8 / Math.min(1, camera.aspect);
       camera.updateProjectionMatrix();
     };
     resize();
-
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(mount);
 
     const clock = new THREE.Clock();
+    let elapsed = 0;
     let frame = 0;
-    // Only animate while the globe is on screen: off screen it would keep the
-    // GPU busy (and the phone warm) for nothing. Time keeps flowing from the
-    // clock, so the swell and pulses resume in step.
-    let onScreen = true;
-    const visibility = new IntersectionObserver(([entry]) => {
-      onScreen = entry.isIntersecting;
-      if (onScreen && !frame) frame = requestAnimationFrame(tick);
-    });
-    visibility.observe(mount);
-
-    const tick = () => {
-      if (!onScreen) {
+    let visible = true;
+    const render = () => {
+      if (!visible) {
         frame = 0;
         return;
       }
-      frame = requestAnimationFrame(tick);
-      const t = clock.getElapsedTime();
+      frame = requestAnimationFrame(render);
+      const delta = Math.min(clock.getDelta(), 0.05);
+      elapsed += delta;
+      const step = delta * 60;
 
-      // Apply this frame's share of the drag.
-      if (pendingX || pendingY) {
-        world.rotation.y += pendingX * ROTATE_PER_PX;
-        world.rotation.x = THREE.MathUtils.clamp(
-          world.rotation.x + pendingY * ROTATE_PER_PX,
-          -0.9,
-          0.9,
-        );
-        pendingX = pendingY = 0;
+      if (dragDX || dragDY) {
+        spin.rotation.y += dragDX * 0.005;
+        spin.rotation.x = THREE.MathUtils.clamp(spin.rotation.x + dragDY * 0.005, -0.9, 0.9);
+        dragDX = dragDY = 0;
       }
-
-      const idle = performance.now() - lastInteraction > RESUME_MS;
-      drift += ((idle ? 1 : 0) - drift) * (idle ? 0.02 : 0.12);
-
-      if (!dragging) {
-        // Held: a flick's momentum dies out quickly and the globe settles.
-        // Idle again: it eases back up to the slow drift.
-        velocity += (DRIFT * drift - velocity) * (idle ? 0.02 : 0.08);
-        tiltVelocity *= 0.94;
-        world.rotation.y += velocity;
-        world.rotation.x = THREE.MathUtils.clamp(
-          world.rotation.x + tiltVelocity,
-          -0.9,
-          0.9,
-        );
-      }
-
-      waveUniforms.uTime.value = t;
-
-      // Clouds drift a touch faster than the surface.
-      cloudLayer.rotation.y += 0.0004 * drift;
-
-      markers.children.forEach((child) => {
-        if (child.userData.halo) {
-          const pulse =
-            1 + Math.sin(t * 1.6 + (child.userData.phase as number)) * 0.35;
-          child.scale.setScalar(pulse);
+      if (flight) {
+        const t = Math.min(1, (performance.now() - flight.start) / flight.dur);
+        const eased = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+        // A slight pull back mid-flight, like a camera on a long move.
+        camera.position.z = (5.8 + Math.sin(t * Math.PI) * 0.35) / Math.min(1, camera.aspect);
+        spin.rotation.x = flight.fromX + (flight.toX - flight.fromX) * eased;
+        spin.rotation.y = flight.fromY + (flight.toY - flight.fromY) * eased;
+        if (t >= 1) flight = null;
+      } else if (!reduced) {
+        // Auto-rotation eases back in after five idle seconds.
+        const idle = performance.now() - lastInteraction > 5000;
+        autoSpin += (Number(idle) - autoSpin) * (1 - Math.exp(-(idle ? 1.2 : 7.2) * delta));
+        if (!dragging) {
+          spinY += (0.0016 * autoSpin - spinY) * (1 - Math.exp(-(idle ? 1.2 : 4.8) * delta));
+          spinX *= Math.exp(-3.7 * delta);
+          spin.rotation.y += spinY * step;
+          spin.rotation.x = THREE.MathUtils.clamp(spin.rotation.x + spinX * step, -0.9, 0.9);
         }
+      }
+
+      uniforms.uTime.value = reduced ? 0 : elapsed;
+      if (!reduced) cloudLayer.rotation.y += 0.024 * autoSpin * delta;
+
+      if (routeCurve && !reduced) {
+        const t = Math.min(1, (performance.now() - routeStart) / 2600);
+        routeGeometry.setDrawRange(0, Math.max(2, Math.floor(t * 97)));
+        plane.position.copy(routeCurve.getPoint(t));
+        plane.visible = t < 1;
+        routeMaterial.opacity = t < 1 ? 0.7 : 0.35;
+      }
+
+      pins.children.forEach((child) => {
+        if (child.userData.halo && !reduced)
+          child.scale.setScalar(1 + Math.sin(elapsed * 1.6 + child.userData.phase) * 0.35);
       });
 
       if (pointerInside && pointerMoved && !dragging) {
         pointerMoved = false;
         raycaster.setFromCamera(pointer, camera);
-        const hits = raycaster.intersectObjects(
-          markers.children.filter((c) => !c.userData.halo),
-          false,
-        );
-        // Only count a marker on the near hemisphere.
-        const visible = hits.filter((hit) => {
-          const world = hit.object.getWorldPosition(new THREE.Vector3());
-          return world.z > 0;
-        });
-        const next =
-          visible.length > 0
-            ? globePoints[visible[0].object.userData.index as number]
-            : null;
-        setHovered((prev) => (prev?.name === next?.name ? prev : next));
-        renderer.domElement.style.cursor = visible.length ? "pointer" : "grab";
+        const hits = raycaster
+          .intersectObjects(
+            pins.children.filter((c) => !c.userData.halo),
+            false,
+          )
+          // Only pins on the near side of the globe.
+          .filter((hit) => hit.object.getWorldPosition(new THREE.Vector3()).z > 0);
+        const point = hits[0] ? (points[hits[0].object.userData.index] ?? null) : null;
+        setHovered((current) => (current?.name === point?.name ? current : point));
+        canvas.style.cursor = hits.length ? "pointer" : "grab";
       }
 
       renderer.render(scene, camera);
     };
-    tick();
+
+    // Off screen, the loop stops entirely.
+    const visibility = new IntersectionObserver(([entry]) => {
+      visible = !!entry?.isIntersecting;
+      if (visible && !frame) frame = requestAnimationFrame(render);
+    });
+    visibility.observe(mount);
+    render();
+
+    onReadyRef.current?.({
+      flyTo: (place) => {
+        if (!reduced) {
+          const path = arc(toVector(home.lat, home.lng, RADIUS * 1.018), toVector(place.lat, place.lng, RADIUS * 1.018));
+          routeCurve = new THREE.CatmullRomCurve3(path);
+          routeGeometry.setFromPoints(path);
+          routeGeometry.setDrawRange(0, 2);
+          route.visible = true;
+          routeStart = performance.now();
+        }
+        // Turn so the place faces the camera, the short way round.
+        earth.updateMatrix();
+        const facing = toVector(place.lat, place.lng, 1).applyMatrix4(earth.matrix);
+        const toY = -Math.atan2(facing.x, facing.z);
+        const toX = THREE.MathUtils.clamp(Math.asin(THREE.MathUtils.clamp(facing.y, -1, 1)), -0.9, 0.9);
+        const full = Math.PI * 2;
+        let turn = (toY - spin.rotation.y) % full;
+        if (turn > Math.PI) turn -= full;
+        if (turn < -Math.PI) turn += full;
+        spinY = spinX = 0;
+        lastInteraction = performance.now() + 4000;
+        autoSpin = 0;
+        if (reduced) {
+          spin.rotation.set(toX, spin.rotation.y + turn, 0);
+          return;
+        }
+        flight = {
+          fromX: spin.rotation.x,
+          fromY: spin.rotation.y,
+          toX,
+          toY: spin.rotation.y + turn,
+          start: performance.now(),
+          dur: 1600,
+        };
+      },
+    });
 
     return () => {
       cancelAnimationFrame(frame);
       visibility.disconnect();
       resizeObserver.disconnect();
-      renderer.domElement.removeEventListener("pointermove", onPointerMove);
-      renderer.domElement.removeEventListener("pointerdown", onPointerDown);
-      renderer.domElement.removeEventListener("pointerup", onPointerUp);
-      renderer.domElement.removeEventListener("pointercancel", onPointerUp);
-      renderer.domElement.removeEventListener("lostpointercapture", onPointerUp);
-      renderer.domElement.removeEventListener("pointerleave", onPointerLeave);
+      canvas.removeEventListener("pointermove", onMove);
+      canvas.removeEventListener("pointerdown", onDown);
+      canvas.removeEventListener("pointerup", onUp);
+      canvas.removeEventListener("pointercancel", onUp);
+      canvas.removeEventListener("lostpointercapture", onUp);
+      canvas.removeEventListener("pointerleave", onLeave);
+      scene.traverse((object) => {
+        if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
+          object.geometry.dispose();
+          (Array.isArray(object.material) ? object.material : [object.material]).forEach((m) => m.dispose());
+        }
+      });
+      [map, clouds, specular, surface.normalMap].forEach((t) => t?.dispose());
       renderer.dispose();
-      mount.removeChild(renderer.domElement);
+      mount.removeChild(canvas);
     };
-  }, []);
+  }, [destinations, home]);
 
   return (
-    <div className="relative h-full w-full">
+    <div className={`relative ${className}`}>
       <div ref={mountRef} className="h-full w-full cursor-grab select-none" />
       {hovered && (
         <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 border border-primary/50 bg-abyss/80 px-4 py-2 text-center backdrop-blur">
-          <p className="text-display text-xl text-primary">{hovered.name}</p>
-          <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-            {hovered.region}
-          </p>
+          <p className="display text-xl text-primary">{hovered.name}</p>
+          <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">{hovered.region}</p>
         </div>
       )}
     </div>

@@ -1,111 +1,63 @@
 import { Link } from "react-router-dom";
-import Logo from "./Logo";
-import { company } from "../tpl";
+import logo from "../assets/tpl-logo-white.png";
+import { Eyebrow } from "./ui";
+import { openAdvisor } from "../advisor";
+import { company, navLinks, tel } from "../tpl";
 
 export default function Footer() {
   return (
-    <footer className="relative mt-24 border-t border-border/40 bg-abyss/60">
-      {/* The logo gets its own row, so the three column headings below it
-          share one baseline. */}
-      <div className="container-editorial pt-14">
-        <Logo className="h-11" />
-      </div>
-      <div className="container-editorial grid grid-cols-1 gap-10 pt-10 pb-14 md:grid-cols-12">
-        <div className="md:col-span-5">
-          <p className="eyebrow">The leisure arm of {company.parent}</p>
-          <h3 className="text-display mt-3 text-3xl leading-tight">
-            {company.tagline}.
-          </h3>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-            Corporate travel, MICE and incentive tours out of Colombo — delivered
-            with precision, efficiency and attention to detail, so every journey
-            reflects the standards of your organization.
-          </p>
-        </div>
-
-        <div className="md:col-span-3">
-          <p className="eyebrow">Explore</p>
-          <ul className="mt-4 space-y-1.5 text-sm">
-            <li>
-              <Link to="/" className="gold-underline">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/personal-travel" className="gold-underline">
-                Personal Travels
-              </Link>
-            </li>
-            <li>
-              <Link to="/corporate" className="gold-underline">
-                Corporate & Business
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="gold-underline">
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="gold-underline">
-                Request a Proposal
-              </Link>
-            </li>
-            <li>
-              <Link to="/terms" className="gold-underline">
-                Terms &amp; Conditions
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        <div className="md:col-span-4">
-          <p className="eyebrow">Visit us</p>
-          <address className="mt-4 space-y-1 text-sm not-italic text-muted-foreground">
-            <p className="text-foreground">{company.legalName}</p>
-            {company.address.map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-            <p className="pt-2">
-              <a href={`mailto:${company.email}`} className="gold-underline">
-                {company.email}
-              </a>
-            </p>
-            <p>
-              <a
-                href={`https://${company.website}`}
-                target="_blank"
-                rel="noreferrer"
-                className="gold-underline"
-              >
-                {company.website}
-              </a>
-            </p>
-            <p>
-              Hotline{" "}
-              <a
-                href={`tel:${company.hotlineHref}`}
-                className="gold-underline text-foreground"
-              >
-                {company.hotline}
-              </a>
-            </p>
-          </address>
-        </div>
-      </div>
-
-      <div className="border-t border-border/40">
-        <div className="container-editorial flex flex-col items-center justify-between gap-3 py-5 text-xs text-muted-foreground md:flex-row">
-          <p>
-            © {new Date().getFullYear()} {company.legalName}. All rights
-            reserved. ·{" "}
-            <Link to="/terms" className="gold-underline">
-              Terms &amp; Conditions
+    <footer className="travel-footer">
+      <div className="travel-shell">
+        <div className="footer-main">
+          <div className="footer-brand">
+            <Link to="/" aria-label="Travel Port Leisure home">
+              <img src={logo} className="brand-logo" alt="Travel Port Leisure" loading="lazy" />
             </Link>
+            <Eyebrow>The leisure arm of Base HP</Eyebrow>
+            <h3>
+              Explore the <em>Unexplored.</em>
+            </h3>
+            <p>
+              Corporate travel, MICE and incentive tours out of Colombo — delivered with precision, efficiency and
+              attention to detail, so every journey reflects the standards of your organization.
+            </p>
+          </div>
+          <div>
+            <p className="footer-title">Explore</p>
+            <nav className="footer-links" aria-label="Footer navigation">
+              {navLinks.map((link) => (
+                <Link key={link.to} to={link.to}>
+                  {link.label === "About" ? "About Us" : link.label}
+                </Link>
+              ))}
+              <button type="button" onClick={() => openAdvisor({ track: "corporate" })}>
+                Request a Proposal
+              </button>
+              <Link to="/terms">Terms &amp; Conditions</Link>
+            </nav>
+          </div>
+          <div>
+            <p className="footer-title">Visit us</p>
+            <address className="footer-address">
+              Travel Port Leisure (Private) Ltd
+              <br />
+              No. 181, Nawala Road
+              <br />
+              Narahenpita, Colombo 05
+              <br />
+              Sri Lanka
+              <a href={`mailto:${company.email}`}>{company.email}</a>
+              <a href={`https://${company.website}`}>{company.website}</a>
+              <a href={tel(company.phone)}>Hotline {company.phone}</a>
+            </address>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>
+            © {new Date().getFullYear()} Travel Port Leisure (Private) Ltd. All rights reserved. ·{" "}
+            <Link to="/terms">Terms &amp; Conditions</Link>
           </p>
-          <p className="uppercase tracking-[0.24em]">
-            Powered by Experience · Driven by Excellence · Focused on Service
-          </p>
+          <p className="footer-motto">Powered by experience · Driven by excellence · Focused on service</p>
         </div>
       </div>
     </footer>

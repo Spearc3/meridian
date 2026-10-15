@@ -1,427 +1,318 @@
-import { Suspense, lazy, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowDown, ArrowRight } from "lucide-react";
-import Reveal from "../components/Reveal";
+import { ArrowDown, ArrowLeft, ArrowRight, X } from "lucide-react";
+import DestinationExplorer from "../components/DestinationExplorer";
 import ServiceIcon from "../components/ServiceIcon";
-// three.js is the bulk of the site's JavaScript and only the globe uses it:
-// split it out so other pages never download it, and so the hero copy paints
-// before the WebGL scene is parsed.
-const Globe = lazy(() => import("../components/Globe"));
-import FlightBackground from "../components/FlightBackground";
-import { homeFlight } from "../flights";
-import MemoryWall from "../components/MemoryWall";
+import { Button, Eyebrow } from "../components/ui";
+import { buttonClass } from "../components/buttonClass";
+import { scrollTrack } from "../scrollTrack";
+import { openAdvisor } from "../advisor";
+import heroOcean from "../assets/hero-ocean.jpg";
 import personalImage from "../assets/tpl-memory-03.jpg";
 import corporateImage from "../assets/tpl-memory-05.jpg";
-import { company, headlineStats, memories, regions } from "../tpl";
-
-/** What the desk can put to work on any plan, personal or corporate. */
-const readyToOffer = [
-  { icon: "air", label: "Air travel & ticketing" },
-  { icon: "hotel", label: "Hotels & ground handling" },
-  { icon: "visa", label: "Visa consultation" },
-  { icon: "insurance", label: "Travel insurance" },
-  { icon: "lounge", label: "Airport lounges" },
-  { icon: "chauffeur", label: "Chauffeur services" },
-];
+import { company, memories, principles, readyToOffer, tel } from "../tpl";
+import { usePageMeta } from "../usePageMeta";
 
 /** The two crafts — each a doorway to its own page. */
 const crafts = [
   {
-    to: "/personal-travel",
-    image: personalImage,
-    imageAlt: "A Travel Port Leisure group on holiday",
-    eyebrow: "Personal Travels",
-    title: (
-      <>
-        The art of <em className="text-primary">the journey.</em>
-      </>
-    ),
-    body: "Leisure is personal. We shape every itinerary around how you like to travel — the pace, the places and the small details that turn a trip into a memory.",
+    number: "01",
+    label: "Personal Travels",
+    title: "The art of",
+    accent: "the journey.",
+    description:
+      "Leisure is personal. We shape every itinerary around how you like to travel — the pace, the places and the small details that turn a trip into a memory.",
     tags: ["Leisure holidays", "Luxury & FIT", "Group tours", "Cruises"],
+    image: personalImage,
+    alt: "A Travel Port Leisure group on holiday",
+    to: "/personal-travel",
     cta: "Explore personal travel",
   },
   {
-    to: "/corporate",
-    image: corporateImage,
-    imageAlt: "A corporate incentive group travelling with Travel Port Leisure",
-    eyebrow: "Corporate & Business",
-    title: (
-      <>
-        The discipline of <em className="text-primary">business travel.</em>
-      </>
-    ),
-    body: "Business travel runs on precision. We manage the moving parts — ticketing, accommodation, visas and ground transport — so your people arrive ready, and every conference and incentive tour reflects the standards of your organization.",
+    number: "02",
+    label: "Corporate & Business",
+    title: "The discipline of",
+    accent: "business travel.",
+    description:
+      "Business travel runs on precision. We manage the moving parts — ticketing, accommodation, visas and ground transport — so your people arrive ready, and every conference and incentive tour reflects the standards of your organization.",
     tags: ["Travel management", "MICE", "Incentive tours", "Global aviation"],
+    image: corporateImage,
+    alt: "A corporate incentive group travelling with Travel Port Leisure",
+    to: "/corporate",
     cta: "Explore corporate travel",
   },
 ];
 
-/** The deck's three promises, each with what stands behind it. */
-const principles = [
-  {
-    icon: "experience",
-    title: "Powered by experience",
-    body: "A team of veteran travel professionals, led by more than 25 years in the travel industry.",
-  },
-  {
-    icon: "excellence",
-    title: "Driven by excellence",
-    body: "Precision, efficiency and attention to detail — from a single ticket to a conference abroad.",
-  },
-  {
-    icon: "service",
-    title: "Focused on service",
-    body: "One travel desk for every part of the trip, with agents around the globe.",
-  },
+const stats = [
+  ["7", "Continents"],
+  ["35+", "Destinations"],
+  ["25+", "Years industry expertise"],
 ];
 
 export default function Home() {
-  const copyRef = useRef<HTMLDivElement>(null);
+  usePageMeta(
+    "Travel Port Leisure — Explore the Unexplored",
+    "Personal holidays, corporate travel and incentive tours from Colombo. Flexible itineraries, seven regions and over 25 years of travel expertise.",
+  );
 
-  // Hero copy fades on scroll, written straight to the element once per
-  // frame. Routing scrollY through React state re-rendered the entire page on
-  // every scroll event, which is what made scrolling stutter on phones.
+  const [viewing, setViewing] = useState<number | null>(null);
+  const track = useRef<HTMLDivElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const photo = viewing === null ? null : memories[viewing];
+
+  // Lightbox: page locked, focus held on the close button, Escape closes, and
+  // focus goes back where it was.
   useEffect(() => {
-    let raf = 0;
-    const apply = () => {
-      raf = 0;
-      if (copyRef.current) copyRef.current.style.opacity = String(Math.max(0, 1 - window.scrollY / 500));
+    if (!photo) return;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButton.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setViewing(null);
+      if (e.key === "Tab") {
+        e.preventDefault();
+        closeButton.current?.focus();
+      }
     };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(apply);
-    };
-    apply();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("keydown", onKey);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
     };
-  }, []);
+  }, [photo]);
 
   return (
     <>
-      <FlightBackground stops={homeFlight} />
-
-      {/* Hero — the flight's first stop, the surf seen from above */}
-      {/* Sized to the large viewport, so it fills the screen even with a
-          phone's address bar collapsed; the copy's bottom padding adds back
-          the bar's height (lvh - svh) so it never sits underneath it. */}
-      <section data-flight className="relative h-lvh w-full overflow-hidden">
-        {/* The hero's own scrims, as they always were: the flight's dark tint
-            is off for the ocean stop (see homeFlight). */}
-        <div className="absolute inset-0 bg-gradient-to-b from-abyss/60 via-abyss/40 to-abyss" />
-        {/* Left-weighted scrim under the copy column only. */}
-        <div className="absolute inset-0 bg-gradient-to-r from-abyss/85 via-abyss/40 to-transparent" />
-
-        <div
-          ref={copyRef}
-          className="text-legible container-editorial relative z-10 flex h-full flex-col justify-end pb-[calc(6rem_+_100lvh_-_100svh)] will-change-[opacity]"
-        >
-          <p className="eyebrow animate-reveal">
-            {company.name} · Colombo, Sri Lanka
-          </p>
-          <h1
-            className="text-display mt-6 text-[13vw] leading-[0.85] animate-reveal md:text-[9rem]"
-            style={{ animationDelay: "0.15s" }}
-          >
-            Explore the
-            <br />
-            <span className="italic text-primary">Unexplored.</span>
-          </h1>
-          <p
-            className="mt-10 max-w-xl text-lg leading-relaxed text-foreground/90 animate-reveal"
-            style={{ animationDelay: "0.25s" }}
-          >
-            Veteran travel professionals for both sides of travel — the holiday
-            that should feel effortless, and the business trip that has to run
-            like clockwork.
-          </p>
-          <div
-            className="mt-10 flex flex-col gap-4 animate-reveal sm:flex-row"
-            style={{ animationDelay: "0.35s" }}
-          >
-            <Link
-              to="/personal-travel"
-              className="group inline-flex items-center justify-between gap-6 border border-primary bg-primary px-6 py-4 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground [text-shadow:none] transition-colors hover:bg-mist"
-            >
-              Personal Travels
-              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
-              to="/corporate"
-              className="group inline-flex items-center justify-between gap-6 border border-foreground/40 bg-abyss/40 px-6 py-4 text-xs font-semibold uppercase tracking-[0.24em] text-foreground backdrop-blur-sm transition-colors hover:border-primary hover:text-primary"
-            >
-              Corporate &amp; Business
-              <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-        </div>
-
-        <div className="absolute bottom-[calc(1.5rem_+_100lvh_-_100svh)] left-1/2 z-10 hidden -translate-x-1/2 text-muted-foreground md:block">
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-[10px] uppercase tracking-[0.28em]">
-              Scroll
-            </span>
-            <ArrowDown size={14} className="animate-floaty" />
-          </div>
-        </div>
-      </section>
-
-      {/* Dynamic plans + the network behind them */}
-      <section id="network" data-flight className="relative scroll-mt-20 overflow-hidden py-28">
-        <div className="container-editorial grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
-          <Reveal>
-            <p className="eyebrow">Dynamic travel plans</p>
-            <h2 className="text-display mt-6 text-5xl leading-[0.95] md:text-7xl">
-              Plans that move
+      <main>
+        <section className="home-hero" aria-labelledby="home-title">
+          <img src={heroOcean} className="hero-photo" alt="Ocean waves breaking along a tropical coastline" fetchPriority="high" />
+          <div className="hero-overlay" />
+          <div className="travel-shell hero-content">
+            <Eyebrow>{company.name} · Colombo, Sri Lanka</Eyebrow>
+            <h1 id="home-title">
+              Explore the
               <br />
-              <em className="text-primary">as you do.</em>
-            </h2>
-            <p className="mt-8 max-w-lg text-lg leading-relaxed text-muted-foreground">
-              Every itinerary is built around you and stays flexible — we
-              adapt it with you as plans change. Behind it sits a global network
-              of agents across seven regions, and the expertise to put it to
-              work for a family holiday or a company-wide incentive tour.
+              <em>Unexplored.</em>
+            </h1>
+            <p className="hero-description">
+              Veteran travel professionals for both sides of travel — the holiday that should feel effortless, and the
+              business trip that has to run like clockwork.
             </p>
+            <div className="hero-actions">
+              <Link to="/personal-travel" className={buttonClass("travelOutline")}>
+                Personal Travels
+                <ArrowRight size={16} />
+              </Link>
+              <Link to="/corporate" className={buttonClass("travel")}>
+                Corporate &amp; Business
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+          <div className="travel-shell hero-bottom">
+            <span />
+            <a href="#dynamic-plans" className="scroll-link">
+              Scroll <ArrowDown />
+            </a>
+          </div>
+        </section>
 
-            <p className="eyebrow mt-12">Expertise, ready to be offered</p>
-            <ul className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
+        <section className="section" id="dynamic-plans">
+          <div className="travel-shell">
+            <Eyebrow>Dynamic travel plans</Eyebrow>
+            <div className="section-intro">
+              <h2>
+                Plans that move
+                <br />
+                <em>as you do.</em>
+              </h2>
+              <p className="section-description">
+                Every itinerary is built around you and stays flexible — we adapt it with you as plans change. Behind it
+                sits a global network of agents, and the expertise to put it to work for a family holiday or a
+                company-wide incentive tour.
+              </p>
+            </div>
+            <p className="services-label">Expertise, ready to be offered</p>
+            <div className="services">
               {readyToOffer.map((item) => (
-                <li key={item.label} className="flex items-center gap-3">
-                  <ServiceIcon name={item.icon} size={36} />
-                  <span className="text-sm leading-snug text-foreground/90">
-                    {item.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-12 grid grid-cols-3 gap-8 border-t border-border/50 pt-8">
-              {headlineStats.map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-display text-4xl text-primary">
-                    {stat.value}
-                  </p>
-                  <p className="mt-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                    {stat.label}
-                  </p>
+                <div key={item.label} className="service-item">
+                  <ServiceIcon name={item.icon} />
+                  <span>{item.label}</span>
                 </div>
               ))}
             </div>
-          </Reveal>
-
-          <div className="relative aspect-square w-full">
-            <div className="absolute inset-0 rounded-full bg-primary/10 blur-3xl" />
-            <div className="relative h-full w-full">
-              <Suspense fallback={null}>
-                <Globe />
-              </Suspense>
+            <div className="stats">
+              {stats.map(([value, label]) => (
+                <div key={label} className="stat">
+                  <strong>{value}</strong>
+                  <span>{label}</span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Where we take you: every destination pinned on the globe above */}
-        <div data-flight className="container-editorial mt-20">
-          <Reveal>
-            <p className="eyebrow">Where we take you</p>
-            <h3 className="text-display mt-4 text-4xl md:text-5xl">
-              Seven regions, one travel desk.
-            </h3>
-          </Reveal>
-          <div className="mt-10 grid grid-cols-2 gap-x-8 gap-y-10 border-t border-border/50 pt-10 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
-            {regions.map((region, i) => (
-              <Reveal key={region.name} delay={(i % 4) * 0.06}>
-                <h4 className="text-display text-2xl leading-tight text-primary">
-                  {region.name}
-                </h4>
-                <ul className="mt-4 space-y-1.5 text-sm text-muted-foreground">
-                  {region.places.map((place) => (
-                    <li key={place}>{place}</li>
-                  ))}
-                </ul>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+        <DestinationExplorer />
 
-      {/* Two crafts */}
-      <section id="paths" data-flight className="relative scroll-mt-20 py-28">
-        <div className="container-editorial">
-          <Reveal>
-            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-              <h2 className="text-display max-w-3xl text-5xl leading-[0.95] md:text-7xl">
+        <section className="section">
+          <div className="travel-shell">
+            <div className="section-heading">
+              <h2>
                 Two kinds of travel.
                 <br />
-                <em className="text-primary">Both, done properly.</em>
+                <em>Both, done properly.</em>
               </h2>
-              <p className="max-w-sm text-muted-foreground">
-                A holiday and a business trip ask for different things. We know
-                the difference — and the craft behind each.
+              <p className="section-description">
+                A holiday and a business trip ask for different things. We know the difference — and the craft behind
+                each.
               </p>
             </div>
-          </Reveal>
-
-          <div className="mt-20 space-y-24 md:space-y-32">
-            {crafts.map((craft, i) => (
-              <div
-                key={craft.to}
-                className="grid grid-cols-1 items-center gap-10 md:grid-cols-12 md:gap-16"
-              >
-                <Reveal
-                  className={`md:col-span-7 ${i % 2 ? "md:order-2" : ""}`}
-                >
-                  <Link
-                    to={craft.to}
-                    className="group block aspect-[4/3] overflow-hidden bg-secondary"
-                    aria-label={craft.cta}
-                  >
-                    <img
-                      src={craft.image}
-                      alt={craft.imageAlt}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105"
-                    />
+            <div className="travel-types">
+              {crafts.map((craft) => (
+                <article key={craft.label} className="travel-type">
+                  <Link to={craft.to} className="type-image-link">
+                    <img className="type-image" src={craft.image} alt={craft.alt} loading="lazy" />
+                    <span className="image-index">
+                      {craft.number} / {craft.label}
+                    </span>
                   </Link>
-                </Reveal>
-                <Reveal
-                  delay={0.1}
-                  className={`md:col-span-5 ${i % 2 ? "md:order-1" : ""}`}
-                >
-                  <p className="eyebrow">{craft.eyebrow}</p>
-                  <h3 className="text-display mt-4 text-4xl leading-tight md:text-5xl">
-                    {craft.title}
-                  </h3>
-                  <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-                    {craft.body}
-                  </p>
-                  <ul className="mt-8 flex flex-wrap gap-2">
-                    {craft.tags.map((tag) => (
-                      <li
-                        key={tag}
-                        className="border border-border/70 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-foreground/80"
-                      >
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    to={craft.to}
-                    className="group mt-10 inline-flex items-center gap-3 border-b border-primary/70 pb-2 text-sm uppercase tracking-[0.24em] text-primary"
-                  >
-                    {craft.cta}
-                    <ArrowRight
-                      size={16}
-                      className="transition-transform group-hover:translate-x-1"
-                    />
-                  </Link>
-                </Reveal>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Principles */}
-      <section data-flight className="relative py-28">
-        <div className="container-editorial">
-          <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-3">
-            {principles.map((item, i) => (
-              <Reveal key={item.title} delay={i * 0.08} className="h-full">
-                <div className="h-full bg-abyss p-10">
-                  <ServiceIcon name={item.icon} size={56} />
-                  <h3 className="text-display mt-8 text-3xl leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 leading-relaxed text-muted-foreground">
-                    {item.body}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Memories */}
-      <section id="memories" data-flight className="relative scroll-mt-20 py-28">
-        <div className="container-editorial">
-          <div className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <Reveal>
-              <p className="eyebrow">From the field</p>
-              <h2 className="text-display mt-4 text-5xl md:text-6xl">
-                Memories we created.
-              </h2>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="max-w-sm text-sm text-muted-foreground">
-                Corporate incentive tours, group journeys and cruises we have
-                arranged for our clients.
-              </p>
-            </Reveal>
-          </div>
-
-          <MemoryWall items={memories} />
-        </div>
-      </section>
-
-      {/* Where next */}
-      <section data-flight className="relative py-28">
-        <div className="container-editorial">
-          <Reveal>
-            <p className="eyebrow">Connect with us</p>
-            <h2 className="text-display mt-4 text-5xl md:text-6xl">
-              Where are you headed next?
-            </h2>
-          </Reveal>
-          <div className="mt-12 grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-2">
-            {[
-              {
-                to: "/personal-travel#plan",
-                eyebrow: "Planning a holiday?",
-                line: "Tell us where, when and who's coming — we'll shape the trip around you.",
-                cta: "Start planning",
-              },
-              {
-                to: "/corporate#proposal",
-                eyebrow: "Planning for your team?",
-                line: "Travel management, conferences and incentive tours, proposed to your brief.",
-                cta: "Request a proposal",
-              },
-            ].map((item, i) => (
-              <Reveal key={item.to} delay={i * 0.08} className="h-full">
-                <Link
-                  to={item.to}
-                  className="group flex h-full flex-col justify-between gap-10 bg-secondary/40 p-10 transition-colors hover:bg-secondary/70 md:p-14"
-                >
-                  <div>
-                    <p className="eyebrow">{item.eyebrow}</p>
-                    <p className="text-display mt-4 text-3xl leading-snug">
-                      {item.line}
-                    </p>
+                  <div className="type-content">
+                    <Eyebrow>{craft.label}</Eyebrow>
+                    <h3>
+                      {craft.title}
+                      <br />
+                      <em>{craft.accent}</em>
+                    </h3>
+                    <p className="section-description">{craft.description}</p>
+                    <div className="type-tags">
+                      {craft.tags.map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                    <Link to={craft.to} className="text-link">
+                      {craft.cta}
+                      <ArrowRight />
+                    </Link>
                   </div>
-                  <span className="inline-flex items-center gap-3 text-sm uppercase tracking-[0.24em] text-primary">
-                    {item.cta}
-                    <ArrowRight
-                      size={16}
-                      className="transition-transform group-hover:translate-x-1"
-                    />
-                  </span>
-                </Link>
-              </Reveal>
-            ))}
+                </article>
+              ))}
+            </div>
+            <div className="principles">
+              {principles.map((item) => (
+                <div key={item.title} className="principle">
+                  <ServiceIcon name={item.icon} />
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <Reveal>
-            <p className="mt-10 text-sm text-muted-foreground">
-              Or call our hotline on{" "}
-              <a href={`tel:${company.hotlineHref}`} className="gold-underline text-foreground">
-                {company.hotline}
-              </a>
-              .
+        </section>
+
+        <section className="section memories-section">
+          <div className="travel-shell">
+            <div className="section-heading">
+              <div>
+                <Eyebrow>From the field</Eyebrow>
+                <h2>
+                  Memories <em>we created.</em>
+                </h2>
+              </div>
+              <div className="gallery-controls">
+                <Button
+                  variant="travelGhost"
+                  aria-label="Previous memories"
+                  title="Previous memories"
+                  onClick={() => scrollTrack(track.current, -1)}
+                >
+                  <ArrowLeft />
+                </Button>
+                <Button
+                  variant="travelGhost"
+                  aria-label="Next memories"
+                  title="Next memories"
+                  onClick={() => scrollTrack(track.current, 1)}
+                >
+                  <ArrowRight />
+                </Button>
+              </div>
+            </div>
+            <p className="section-description mb-8">
+              Corporate incentive tours, group journeys and cruises we have arranged for our clients.
             </p>
-          </Reveal>
+            <div className="memories-track" ref={track}>
+              {memories.map((memory, i) => (
+                <article key={memory.image} className="memory">
+                  <Button
+                    variant="travelGhost"
+                    className="memory-image-button"
+                    aria-label={`View ${memory.alt.toLowerCase()}`}
+                    onClick={() => setViewing(i)}
+                  >
+                    <img src={memory.image} alt={memory.alt} loading="lazy" />
+                  </Button>
+                  <div className="memory-caption">
+                    <h3>{memory.place}</h3>
+                    <p>{memory.type}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="connect-section" id="connect">
+          <div className="travel-shell">
+            <Eyebrow>Connect with us</Eyebrow>
+            <h2>
+              Where are you <em>headed next?</em>
+            </h2>
+            <div className="connect-options">
+              <div className="connect-option">
+                <h3>Planning a holiday?</h3>
+                <p>Tell us where, when and who's coming — we'll shape the trip around you.</p>
+                <Button variant="travel" onClick={() => openAdvisor({ track: "personal" })}>
+                  Start planning
+                  <ArrowRight size={16} />
+                </Button>
+              </div>
+              <div className="connect-option">
+                <h3>Planning for your team?</h3>
+                <p>Travel management, conferences and incentive tours, proposed to your brief.</p>
+                <Button variant="travelOutline" onClick={() => openAdvisor({ track: "corporate" })}>
+                  Request a proposal
+                  <ArrowRight size={16} />
+                </Button>
+              </div>
+            </div>
+            <p className="hotline">
+              Or call our hotline on <a href={tel(company.phone)}>{company.phone}</a>.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      {photo && (
+        <div className="lightbox" role="dialog" aria-modal="true" aria-label={photo.alt} onClick={() => setViewing(null)}>
+          <Button
+            ref={closeButton}
+            variant="travelGhost"
+            className="lightbox-close"
+            aria-label="Close photograph"
+            onClick={() => setViewing(null)}
+          >
+            <X />
+          </Button>
+          <img src={photo.image} alt={photo.alt} onClick={(e) => e.stopPropagation()} />
+          <p>
+            {photo.place} · {photo.type}
+          </p>
         </div>
-      </section>
+      )}
     </>
   );
 }
