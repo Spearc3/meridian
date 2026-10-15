@@ -103,7 +103,10 @@ export default function Home() {
       <FlightBackground stops={homeFlight} />
 
       {/* Hero — the flight's first stop, the surf seen from above */}
-      <section data-flight className="relative h-[100svh] w-full overflow-hidden">
+      {/* Sized to the large viewport, so it fills the screen even with a
+          phone's address bar collapsed; the copy's bottom padding adds back
+          the bar's height (lvh - svh) so it never sits underneath it. */}
+      <section data-flight className="relative h-lvh w-full overflow-hidden">
         {/* The hero's own scrims, as they always were: the flight's dark tint
             is off for the ocean stop (see homeFlight). */}
         <div className="absolute inset-0 bg-gradient-to-b from-abyss/60 via-abyss/40 to-abyss" />
@@ -112,7 +115,7 @@ export default function Home() {
 
         <div
           ref={copyRef}
-          className="text-legible container-editorial relative z-10 flex h-full flex-col justify-end pb-24 will-change-[opacity]"
+          className="text-legible container-editorial relative z-10 flex h-full flex-col justify-end pb-[calc(6rem_+_100lvh_-_100svh)] will-change-[opacity]"
         >
           <p className="eyebrow animate-reveal">
             {company.name} · Colombo, Sri Lanka
@@ -154,7 +157,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 text-muted-foreground md:block">
+        <div className="absolute bottom-[calc(1.5rem_+_100lvh_-_100svh)] left-1/2 z-10 hidden -translate-x-1/2 text-muted-foreground md:block">
           <div className="flex flex-col items-center gap-2">
             <span className="text-[10px] uppercase tracking-[0.28em]">
               Scroll
