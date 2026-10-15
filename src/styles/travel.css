@@ -3875,46 +3875,43 @@ button.destination-tile {
   max-width: 820px;
 }
 
-/* Full-screen heroes fill the whole viewport, edge to edge, on every screen.
-   Sized to the large viewport (lvh) so a phone's collapsing address bar never
-   leaves a strip of the next section showing; taller content may still grow it. */
+/* Full-screen heroes fill exactly the visible screen, edge to edge, with or
+   without a phone's browser bar: dvh tracks the bar as it shows and hides
+   (svh/vh first, for browsers without dvh). Taller content may still grow it. */
 .home-hero,
 .page-hero {
   width: 100%;
   height: auto;
   min-height: 100vh;
-  min-height: 100lvh;
+  min-height: 100svh;
+  min-height: 100dvh;
   max-height: none;
 }
+.page-hero {
+  padding-bottom: 80px;
+}
+.home-hero {
+  padding-bottom: 0;
+}
+.hero-bottom {
+  bottom: 30px;
+}
+
 @media (width<=760px) {
   .home-hero,
   .page-hero {
     height: auto;
-    min-height: 100lvh;
+    min-height: 100svh;
+    min-height: 100dvh;
     max-height: none;
   }
-}
-/* With the phone's browser bar showing, the bottom (100lvh - 100svh) of the
-   hero sits under it: the content centres within what's actually visible,
-   and the scroll hint stays above the bar. 0 on desktop, where lvh = svh. */
-.home-hero {
-  padding-bottom: calc(100lvh - 100svh);
-}
-.page-hero {
-  padding-bottom: calc(80px + 100lvh - 100svh);
-}
-.hero-bottom {
-  bottom: calc(30px + 100lvh - 100svh);
-}
-@media (width<=760px) {
   .page-hero {
-    padding-bottom: calc(60px + 100lvh - 100svh);
+    padding-bottom: 60px;
   }
   .hero-bottom {
-    bottom: calc(25px + 100lvh - 100svh);
+    bottom: 25px;
   }
 }
-
 /* Home stats sit on the same grid as the services above them: thirds of the
    six columns on desktop (two each), one column each on phones (three across),
    centred like the service items. */
