@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import Reveal from "../components/Reveal";
 import ServiceIcon from "../components/ServiceIcon";
-import hero from "../assets/hero-ocean.jpg";
+import PageHero from "../components/PageHero";
+import FlightBackground from "../components/FlightBackground";
+import { aboutFlight } from "../flights";
 import {
   coreServices,
   headlineStats,
@@ -14,18 +16,20 @@ import {
 export default function About() {
   return (
     <>
-      <section className="container-editorial pt-40 pb-24">
-        <p className="eyebrow animate-reveal">Who we are</p>
-        <h1
-          className="text-display mt-6 max-w-5xl text-4xl leading-[1.05] animate-reveal sm:text-6xl sm:leading-[0.95] md:text-8xl"
-          style={{ animationDelay: "0.1s" }}
-        >
-          Veteran travel professionals who{" "}
-          <em className="text-primary">stand apart.</em>
-        </h1>
-      </section>
+      <FlightBackground stops={aboutFlight} />
 
-      <section className="container-editorial grid grid-cols-1 items-start gap-16 pb-32 lg:grid-cols-12">
+      <PageHero
+        eyebrow="Who we are"
+        title={
+          <>
+            Veteran travel professionals
+            <br />
+            who <em className="text-primary">stand apart.</em>
+          </>
+        }
+      />
+
+      <section data-flight className="container-editorial grid grid-cols-1 items-start gap-16 pt-24 pb-32 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <Reveal>
             <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50">
@@ -62,7 +66,7 @@ export default function About() {
       </section>
 
       {/* Vision & mission */}
-      <section className="container-editorial pb-32">
+      <section data-flight className="container-editorial pb-32">
         <Reveal>
           <p className="eyebrow">
             Guided by our purpose. Driven by our commitment.
@@ -84,7 +88,7 @@ export default function About() {
       </section>
 
       {/* Leadership */}
-      <section className="container-editorial pb-32">
+      <section data-flight className="container-editorial pb-32">
         <div className="mb-16 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <Reveal>
             <p className="eyebrow">Our leadership powerhouse</p>
@@ -130,7 +134,7 @@ export default function About() {
       </section>
 
       {/* Core services */}
-      <section className="container-editorial pb-32">
+      <section data-flight className="container-editorial pb-32">
         <div className="mb-14 max-w-3xl">
           <Reveal>
             <p className="eyebrow">Our core services</p>
@@ -163,13 +167,8 @@ export default function About() {
       </section>
 
       {/* By the numbers */}
-      <section className="relative overflow-hidden py-40">
-        <img
-          src={hero}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-abyss via-abyss/60 to-abyss" />
+      {/* The flight background carries this band now: no photo of its own. */}
+      <section data-flight className="relative overflow-hidden py-40">
         <div className="container-editorial relative grid grid-cols-1 gap-12 sm:grid-cols-3">
           {headlineStats.map((stat, i) => (
             <Reveal key={stat.label} delay={i * 0.1}>

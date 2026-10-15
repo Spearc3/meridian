@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
 import Logo from "./Logo";
 
 const links = [
@@ -34,23 +33,74 @@ export default function Header() {
   }, [open]);
 
   return (
-    // Closed: smoky glass flush with the top edge that dissolves into the page.
-    // The frost lives on its own layer, 24px deeper than the 72px header so
-    // the bar reads taller without moving the nav row, masked to transparent
-    // over its last 32px — below the nav row — so the links and logo
-    // themselves are never masked. Open (small screens): the header
-    // becomes a full-height drawer and the layer swaps to a denser, unmasked
-    // glass so nothing underneath stays legible. Type gets a faint shadow so
-    // it holds where a bright patch of photo passes under.
-    <header
-      className={`fixed inset-x-0 top-0 z-50 text-foreground [text-shadow:0_1px_2px_rgb(4_16_32/0.35)] ${
-        open ? "flex h-[100dvh] flex-col" : ""
-      }`}
-    >
+    // The bar: smoky glass flush with the top edge that dissolves into the
+    // page. The frost lives on its own layer, 24px deeper than the 72px header
+    // so the bar reads taller without moving the nav row, masked to
+    // transparent over its last 32px — below the nav row — so the links and
+    // logo themselves are never masked. Type gets a faint shadow so it holds
+    // where a bright patch of photo passes under.
+    //
+    // The drawer (small screens) is a full-screen dark overlay underneath the
+    // bar's row, so the logo and the menu/close button stay put above it. It
+    // stays mounted so it can animate out as well as in; closed, it is
+    // invisible and inert — out of the tab order and the accessibility tree.
+    <header className="fixed inset-x-0 top-0 z-50 text-foreground [text-shadow:0_1px_2px_rgb(4_16_32/0.35)]">
+      <div
+        aria-hidden={!open}
+        inert={!open}
+        className={`fixed inset-0 h-[100dvh] transition-[opacity,visibility] duration-300 ease-out motion-reduce:transition-none lg:hidden ${
+          open ? "visible opacity-100" : "invisible opacity-0"
+        }`}
+      >
+        <div aria-hidden className="glass-drawer pointer-events-none absolute inset-0" />
+        <nav
+          id="mobile-menu"
+          aria-label="Main"
+          className="overlay-scroll relative h-full overflow-y-auto overscroll-contain pt-[72px]"
+        >
+          <div className="container-editorial flex flex-col gap-6 py-8">
+            {[...links, { to: "/contact", label: "Request a Proposal →", cta: true }].map((link, i) => (
+              // Each item rises into place a beat after the one above it on
+              // the way in; on the way out they all leave together.
+              <div
+                key={link.label}
+                className={`transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none ${
+                  open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
+                }`}
+                style={{ transitionDelay: open ? `${90 + i * 45}ms` : "0ms" }}
+              >
+                {"cta" in link ? (
+                  <Link
+                    to={link.to}
+                    className="mt-2 block w-full bg-primary px-5 py-3 text-center text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground [text-shadow:none]"
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <NavLink
+                    to={link.to}
+                    end
+                    className={({ isActive }) =>
+                      `block py-1 text-sm font-semibold uppercase tracking-[0.24em] ${
+                        isActive ? "text-white underline decoration-primary decoration-2 underline-offset-8" : "text-foreground/85"
+                      }`
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                )}
+              </div>
+            ))}
+          </div>
+        </nav>
+      </div>
+
+      {/* The bar's frost fades out as the drawer's darker glass fades in, so
+          the two never stack into a visible band at the top. */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-x-0 top-0 ${
-          open ? "bottom-0 glass-drawer" : "-bottom-6 glass-bar"
+        className={`glass-bar pointer-events-none absolute inset-x-0 top-0 -bottom-6 transition-opacity duration-300 motion-reduce:transition-none ${
+          open ? "opacity-0" : "opacity-100"
         }`}
       />
       <div className="container-editorial relative flex h-[72px] shrink-0 items-center justify-between">
@@ -98,36 +148,27 @@ export default function Header() {
           aria-controls="mobile-menu"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {/* Three bars that fold into an X: the outer two slide to the
+              middle and turn ±45°, the middle one fades. Reverses on close. */}
+          <span aria-hidden className="relative block h-4 w-[22px]">
+            <span
+              className={`absolute inset-x-0 top-0 h-0.5 rounded-full bg-current transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none ${
+                open ? "translate-y-[7px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`absolute inset-x-0 top-[7px] h-0.5 rounded-full bg-current transition-[opacity,transform] duration-200 motion-reduce:transition-none ${
+                open ? "scale-x-0 opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`absolute inset-x-0 top-[14px] h-0.5 rounded-full bg-current transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none ${
+                open ? "-translate-y-[7px] -rotate-45" : ""
+              }`}
+            />
+          </span>
         </button>
       </div>
-
-      {open && (
-        <nav id="mobile-menu" aria-label="Main" className="overlay-scroll relative min-h-0 flex-1 overflow-y-auto overscroll-contain lg:hidden">
-          <div className="container-editorial flex flex-col gap-6 py-8">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end
-                className={({ isActive }) =>
-                  `py-1 text-sm font-semibold uppercase tracking-[0.24em] ${
-                    isActive ? "text-white underline decoration-primary decoration-2 underline-offset-8" : "text-foreground/85"
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-            <Link
-              to="/contact"
-              className="mt-2 w-full bg-primary px-5 py-3 text-center text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground [text-shadow:none]"
-            >
-              Request a Proposal →
-            </Link>
-          </div>
-        </nav>
-      )}
     </header>
   );
 }

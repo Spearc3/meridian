@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import EnquiryForm from "../components/EnquiryForm";
 import Reveal from "../components/Reveal";
 import ServiceIcon from "../components/ServiceIcon";
+import PageHero from "../components/PageHero";
+import FlightBackground from "../components/FlightBackground";
+import { contactFlight } from "../flights";
 import { company, generalEnquiry } from "../tpl";
 
 const details = [
@@ -14,30 +17,30 @@ const details = [
 export default function Contact() {
   return (
     <>
-      <section className="container-editorial pt-40 pb-16">
-        <p className="eyebrow animate-reveal">Connect with us</p>
-        <h1
-          className="text-display mt-6 text-5xl leading-[0.9] animate-reveal sm:text-7xl md:text-9xl"
-          style={{ animationDelay: "0.1s" }}
-        >
-          Tell us where
-          <br />
-          <em className="text-primary">you need to be.</em>
-        </h1>
-        <p
-          className="mt-8 max-w-2xl text-lg text-muted-foreground animate-reveal"
-          style={{ animationDelay: "0.2s" }}
-        >
-          Every journey begins with a conversation. Call the hotline, write to
-          us, or send a message below. For a detailed quote, use the{" "}
-          <Link to="/personal-travel#plan" className="gold-underline text-primary">holiday</Link>{" "}
-          or{" "}
-          <Link to="/corporate#proposal" className="gold-underline text-primary">corporate</Link>{" "}
-          enquiry forms.
-        </p>
-      </section>
+      <FlightBackground stops={contactFlight} />
 
-      <section className="container-editorial grid grid-cols-1 gap-16 pb-32 lg:grid-cols-12">
+      <PageHero
+        eyebrow="Connect with us"
+        title={
+          <>
+            Tell us where
+            <br />
+            <em className="text-primary">you need to be.</em>
+          </>
+        }
+        intro={
+          <>
+            Every journey begins with a conversation. Call the hotline, write to
+            us, or send a message below. For a detailed quote, use the{" "}
+            <Link to="/personal-travel#plan" className="gold-underline text-primary">holiday</Link>{" "}
+            or{" "}
+            <Link to="/corporate#proposal" className="gold-underline text-primary">corporate</Link>{" "}
+            enquiry forms.
+          </>
+        }
+      />
+
+      <section data-flight className="container-editorial grid grid-cols-1 gap-16 pt-24 pb-32 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <Reveal>
             <EnquiryForm fields={generalEnquiry} subject="Website enquiry" />

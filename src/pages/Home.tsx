@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import Reveal from "../components/Reveal";
 import ServiceIcon from "../components/ServiceIcon";
-// three.js is the bulk of the site's JavaScript and only this page uses it:
+// three.js is the bulk of the site's JavaScript and only the globe uses it:
 // split it out so other pages never download it, and so the hero copy paints
-// before the WebGL scenes are parsed.
+// before the WebGL scene is parsed.
 const Globe = lazy(() => import("../components/Globe"));
-const HeroWaves = lazy(() => import("../components/HeroWaves"));
+import FlightBackground from "../components/FlightBackground";
+import { homeFlight } from "../flights";
 import MemoryWall from "../components/MemoryWall";
 import personalImage from "../assets/tpl-memory-03.jpg";
 import corporateImage from "../assets/tpl-memory-05.jpg";
@@ -75,19 +76,16 @@ const principles = [
 ];
 
 export default function Home() {
-  const layerRef = useRef<HTMLDivElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
 
-  // Parallax + fade on scroll, written straight to the two elements once per
+  // Hero copy fades on scroll, written straight to the element once per
   // frame. Routing scrollY through React state re-rendered the entire page on
   // every scroll event, which is what made scrolling stutter on phones.
   useEffect(() => {
     let raf = 0;
     const apply = () => {
       raf = 0;
-      const y = window.scrollY;
-      if (layerRef.current) layerRef.current.style.transform = `translate3d(0, ${y * 0.35}px, 0)`;
-      if (copyRef.current) copyRef.current.style.opacity = String(Math.max(0, 1 - y / 500));
+      if (copyRef.current) copyRef.current.style.opacity = String(Math.max(0, 1 - window.scrollY / 500));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(apply);
@@ -102,16 +100,15 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative h-[100svh] w-full overflow-hidden">
-        <div ref={layerRef} className="absolute inset-0 will-change-transform">
-          <Suspense fallback={null}>
-            <HeroWaves />
-          </Suspense>
-          <div className="absolute inset-0 bg-gradient-to-b from-abyss/60 via-abyss/40 to-abyss" />
-          {/* Left-weighted scrim under the copy column only. */}
-          <div className="absolute inset-0 bg-gradient-to-r from-abyss/85 via-abyss/40 to-transparent" />
-        </div>
+      <FlightBackground stops={homeFlight} />
+
+      {/* Hero — the flight's first stop, the surf seen from above */}
+      <section data-flight className="relative h-[100svh] w-full overflow-hidden">
+        {/* The hero's own scrims, as they always were: the flight's dark tint
+            is off for the ocean stop (see homeFlight). */}
+        <div className="absolute inset-0 bg-gradient-to-b from-abyss/60 via-abyss/40 to-abyss" />
+        {/* Left-weighted scrim under the copy column only. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-abyss/85 via-abyss/40 to-transparent" />
 
         <div
           ref={copyRef}
@@ -168,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* Dynamic plans + the network behind them */}
-      <section id="network" className="relative scroll-mt-20 overflow-hidden py-28">
+      <section id="network" data-flight className="relative scroll-mt-20 overflow-hidden py-28">
         <div className="container-editorial grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
           <Reveal>
             <p className="eyebrow">Dynamic travel plans</p>
@@ -221,7 +218,7 @@ export default function Home() {
         </div>
 
         {/* Where we take you: every destination pinned on the globe above */}
-        <div className="container-editorial mt-20">
+        <div data-flight className="container-editorial mt-20">
           <Reveal>
             <p className="eyebrow">Where we take you</p>
             <h3 className="text-display mt-4 text-4xl md:text-5xl">
@@ -246,7 +243,7 @@ export default function Home() {
       </section>
 
       {/* Two crafts */}
-      <section id="paths" className="relative scroll-mt-20 py-28">
+      <section id="paths" data-flight className="relative scroll-mt-20 py-28">
         <div className="container-editorial">
           <Reveal>
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
@@ -323,7 +320,7 @@ export default function Home() {
       </section>
 
       {/* Principles */}
-      <section className="relative py-28">
+      <section data-flight className="relative py-28">
         <div className="container-editorial">
           <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-3">
             {principles.map((item, i) => (
@@ -344,7 +341,7 @@ export default function Home() {
       </section>
 
       {/* Memories */}
-      <section id="memories" className="relative scroll-mt-20 py-28">
+      <section id="memories" data-flight className="relative scroll-mt-20 py-28">
         <div className="container-editorial">
           <div className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <Reveal>
@@ -366,7 +363,7 @@ export default function Home() {
       </section>
 
       {/* Where next */}
-      <section className="relative py-28">
+      <section data-flight className="relative py-28">
         <div className="container-editorial">
           <Reveal>
             <p className="eyebrow">Connect with us</p>

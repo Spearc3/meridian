@@ -5,7 +5,8 @@ import ServiceGrid from "../components/ServiceGrid";
 import MemoryWall from "../components/MemoryWall";
 import Process from "../components/Process";
 import EnquiryForm from "../components/EnquiryForm";
-import hero from "../assets/tpl-memory-02.jpg";
+import FlightBackground from "../components/FlightBackground";
+import { personalFlight } from "../flights";
 import {
   essentials,
   memories,
@@ -16,8 +17,9 @@ import {
 export default function PersonalTravel() {
   return (
     <>
+      <FlightBackground stops={personalFlight} />
+
       <PageHero
-        image={hero}
         eyebrow="Personal Travels"
         title={
           <>
@@ -36,7 +38,7 @@ export default function PersonalTravel() {
         </a>
       </PageHero>
 
-      <section className="container-editorial py-24">
+      <section data-flight className="container-editorial py-24">
         <div className="mb-14 max-w-3xl">
           <Reveal>
             <p className="eyebrow">Ways to travel</p>
@@ -50,7 +52,7 @@ export default function PersonalTravel() {
 
       {/* Where we take you */}
       {/* Essentials */}
-      <section className="container-editorial py-24">
+      <section data-flight className="container-editorial py-24">
         <Reveal>
           <div className="border border-border/60 bg-secondary/30 p-10 md:p-14">
             <p className="eyebrow">The essentials, handled</p>
@@ -69,7 +71,7 @@ export default function PersonalTravel() {
         </Reveal>
       </section>
 
-      <section className="container-editorial py-24">
+      <section data-flight className="container-editorial py-24">
         <Reveal>
           <p className="eyebrow">From the field</p>
           <h2 className="text-display mt-4 mb-14 text-5xl md:text-6xl">
@@ -81,7 +83,7 @@ export default function PersonalTravel() {
 
       <Process />
 
-      <section id="plan" className="container-editorial scroll-mt-24 py-24">
+      <section data-flight id="plan" className="container-editorial scroll-mt-24 py-24">
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           <Reveal className="lg:col-span-4">
             <p className="eyebrow">Plan your trip</p>

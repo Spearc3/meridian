@@ -5,7 +5,8 @@ import ServiceGrid from "../components/ServiceGrid";
 import MemoryWall from "../components/MemoryWall";
 import Process from "../components/Process";
 import EnquiryForm from "../components/EnquiryForm";
-import hero from "../assets/tpl-memory-01.jpg";
+import FlightBackground from "../components/FlightBackground";
+import { corporateFlight } from "../flights";
 import {
   corporateEnquiry,
   corporateServices,
@@ -35,8 +36,9 @@ const promises = [
 export default function Corporate() {
   return (
     <>
+      <FlightBackground stops={corporateFlight} />
+
       <PageHero
-        image={hero}
         eyebrow="Corporate & Business"
         title={
           <>
@@ -55,7 +57,7 @@ export default function Corporate() {
         </a>
       </PageHero>
 
-      <section className="container-editorial grid grid-cols-1 gap-16 py-24 lg:grid-cols-12">
+      <section data-flight className="container-editorial grid grid-cols-1 gap-16 py-24 lg:grid-cols-12">
         <Reveal className="lg:col-span-5">
           <p className="eyebrow">We stand apart</p>
           <h2 className="text-display mt-4 text-5xl leading-[0.95] md:text-6xl">
@@ -73,7 +75,7 @@ export default function Corporate() {
         </Reveal>
       </section>
 
-      <section className="container-editorial py-24">
+      <section data-flight className="container-editorial py-24">
         <div className="mb-14 max-w-3xl">
           <Reveal>
             <p className="eyebrow">What we manage</p>
@@ -93,7 +95,7 @@ export default function Corporate() {
       </section>
 
       {/* Promises */}
-      <section className="container-editorial py-24">
+      <section data-flight className="container-editorial py-24">
         <div className="grid grid-cols-1 gap-px border border-border/50 bg-border/50 md:grid-cols-3">
           {promises.map((p, i) => (
             <Reveal key={p.title} delay={i * 0.08} className="h-full">
@@ -111,7 +113,7 @@ export default function Corporate() {
         </div>
       </section>
 
-      <section className="container-editorial py-24">
+      <section data-flight className="container-editorial py-24">
         <Reveal>
           <p className="eyebrow">From the field</p>
           <h2 className="text-display mt-4 mb-14 text-5xl md:text-6xl">
@@ -123,7 +125,7 @@ export default function Corporate() {
 
       <Process />
 
-      <section id="proposal" className="container-editorial scroll-mt-24 py-24">
+      <section data-flight id="proposal" className="container-editorial scroll-mt-24 py-24">
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           <Reveal className="lg:col-span-4">
             <p className="eyebrow">Request a proposal</p>
