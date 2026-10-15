@@ -3948,3 +3948,82 @@ button.destination-tile {
 .glass-bar {
   top: -40px;
 }
+
+/* ── Phones held sideways ────────────────────────────────────────────────────
+   Wide enough for the desktop type scale but only ~375–430px tall: the heroes
+   get a compact scale so the whole copy fits the screen, clear of the header
+   above and the advisor orb below; the chat and panel fit the height too. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .home-hero,
+  .page-hero {
+    align-items: center;
+    padding-top: 64px;
+    padding-bottom: 60px;
+  }
+  .hero-content,
+  .page-hero-content {
+    padding-top: 0;
+  }
+  .home-hero h1,
+  .page-hero h1 {
+    margin: 12px 0 10px;
+    font-size: clamp(30px, 9.5vh, 44px);
+    line-height: 1.04;
+  }
+  .hero-description,
+  .page-hero .hero-description {
+    max-width: 520px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .hero-actions .travel-button {
+    min-height: 40px;
+    padding: 10px 18px;
+  }
+  .hero-content .eyebrow,
+  .page-hero-content .eyebrow {
+    font-size: 9px;
+  }
+  .hero-bottom {
+    display: none;
+  }
+
+  /* The orb shrinks and the panel opens beside it, full height, above the
+     header rather than tucked under it. */
+  .advisor-orb {
+    width: 48px;
+    height: 48px;
+    bottom: 10px;
+    left: 10px;
+  }
+  .advisor-panel {
+    z-index: 60;
+    top: 10px;
+    bottom: 10px;
+    left: 68px;
+    width: min(420px, 100vw - 80px);
+    max-height: none;
+  }
+
+  /* "Get in touch" fits the screen, leaving room for the header. */
+  .inner-page .enquiry-wrap.chat-window,
+  .enquiry-chat.chat-window {
+    height: max(300px, calc(var(--screen-h, 100dvh) - 96px));
+  }
+
+  /* Menu: tighter rows so the CTA stays on screen. */
+  #mobile-menu {
+    padding-top: 64px;
+  }
+  #mobile-menu > div {
+    gap: 10px;
+    padding-block: 12px;
+  }
+}
