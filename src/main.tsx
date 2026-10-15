@@ -11,8 +11,10 @@ import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import "./index.css";
 import { installFloatingScrollbar } from "./scrollbar";
+import { trackScreenHeight } from "./screenHeight";
 
 installFloatingScrollbar();
+trackScreenHeight();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

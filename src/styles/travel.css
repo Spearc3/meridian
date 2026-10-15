@@ -3876,8 +3876,9 @@ button.destination-tile {
 }
 
 /* Full-screen heroes fill exactly the visible screen, edge to edge, with or
-   without a phone's browser bar: dvh tracks the bar as it shows and hides
-   (svh/vh first, for browsers without dvh). Taller content may still grow it. */
+   without a phone's browser bar: --screen-h is the measured visible height
+   (src/screenHeight.ts), with dvh/svh/vh behind it if script hasn't run.
+   Taller content may still grow it. */
 .home-hero,
 .page-hero {
   width: 100%;
@@ -3885,6 +3886,7 @@ button.destination-tile {
   min-height: 100vh;
   min-height: 100svh;
   min-height: 100dvh;
+  min-height: var(--screen-h, 100dvh);
   max-height: none;
 }
 .page-hero {
@@ -3903,6 +3905,7 @@ button.destination-tile {
     height: auto;
     min-height: 100svh;
     min-height: 100dvh;
+    min-height: var(--screen-h, 100dvh);
     max-height: none;
   }
   .page-hero {
