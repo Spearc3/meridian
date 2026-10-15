@@ -3504,9 +3504,9 @@ button.destination-tile {
   right: auto;
   width: min(820px, 100vw);
   pointer-events: none;
-  background: oklch(16% 0.044 247 / 0.1);
-  -webkit-backdrop-filter: blur(2.5px) saturate(0.9);
-  backdrop-filter: blur(2.5px) saturate(0.9);
+  background: oklch(16% 0.044 247 / 0.05);
+  -webkit-backdrop-filter: blur(1px) saturate(0.95);
+  backdrop-filter: blur(1px) saturate(0.95);
   -webkit-mask-image: radial-gradient(farthest-side at 32% 50%, #000 62%, transparent 100%);
   mask-image: radial-gradient(farthest-side at 32% 50%, #000 62%, transparent 100%);
 }
@@ -3936,4 +3936,12 @@ button.destination-tile {
 /* Continent tabs centred under the explorer. */
 .continent-tabs {
   justify-content: center;
+}
+
+/* Phones drew a light hairline along the top of the screen: the header's
+   backdrop blur sampling past the viewport edge. The frosted bar now starts
+   above the screen, so its blurred edge is never on it. The browser's own
+   bar is tinted to match the header (theme-color in index.html). */
+.glass-bar {
+  top: -40px;
 }
