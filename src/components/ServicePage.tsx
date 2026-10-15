@@ -158,7 +158,7 @@ export default function ServicePage({ corporate = false }: { corporate?: boolean
               Or call <a href={tel(company.phone)}>{company.phone}</a>
             </p>
           </div>
-          <EnquiryChat key={destination} destination={destination} mode={track} />
+          <EnquiryChat destination={destination} mode={track} />
         </div>
       </section>
     </main>

@@ -88,6 +88,7 @@ export default function Home() {
       <main>
         <section className="home-hero" aria-labelledby="home-title">
           <img src={heroOcean} className="hero-photo" alt="Ocean waves breaking along a tropical coastline" fetchPriority="high" />
+          <img src={heroOcean} className="hero-photo hero-frost" alt="" aria-hidden="true" />
           <div className="hero-overlay" />
           <div className="travel-shell hero-content">
             <Eyebrow>{company.name} · Colombo, Sri Lanka</Eyebrow>

@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react";
 import ServiceIcon from "./ServiceIcon";
 import { AdvisorChat } from "./Advisor";
 import { Button, Eyebrow } from "./ui";
-import { addInterest, openAdvisor, type Track } from "../advisor";
+import { addInterest, openAdvisor, resetChat, startChat, type Track } from "../advisor";
 import { memories, process, type Service } from "../tpl";
 import { scrollTrack } from "../scrollTrack";
 
@@ -47,6 +47,7 @@ export function PageHero({
   return (
     <section className="page-hero">
       <img src={image} className="hero-photo" alt={eyebrow} fetchPriority="high" />
+      <img src={image} className="hero-photo hero-frost" alt="" aria-hidden="true" />
       <div className="hero-overlay" />
       <div className="travel-shell page-hero-content">
         <Eyebrow>{eyebrow}</Eyebrow>
@@ -137,18 +138,35 @@ export function PageMemories({ corporate }: { corporate: boolean }) {
   );
 }
 
-/** The advisor conversation, set into the page in place of a form. */
+/** The advisor conversation, set into the page in place of a form — the same
+ *  conversation as the floating panel, picked up wherever it was. */
 export function EnquiryChat({ mode, destination = "" }: { mode: Track | "contact"; destination?: string }) {
   useEffect(() => {
     if (destination) addInterest("place", destination);
   }, [destination]);
 
+  useEffect(() => {
+    startChat(mode);
+  }, [mode]);
+
   return (
-    <div className="enquiry-wrap enquiry-chat">
-      <div className="enquiry-title">
-        <h3 className="enquiry-title-accent">Get in touch with us</h3>
+    <div className="enquiry-wrap enquiry-chat chat-window">
+      <div className="chat-window-head">
+        <span className="advisor-avatar">
+          <ServiceIcon name="support" size={22} />
+        </span>
+        <div>
+          <h3>Get in touch with us</h3>
+          <p>
+            <span className="chat-window-dot" aria-hidden="true" />
+            Travel advisor · we reply by email
+          </p>
+        </div>
+        <button type="button" aria-label="Start over" title="Start over — clears everything" onClick={resetChat}>
+          <RotateCcw size={16} />
+        </button>
       </div>
-      <AdvisorChat key={destination} initialTrack={mode} autoStart />
+      <AdvisorChat />
     </div>
   );
 }

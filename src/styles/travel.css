@@ -3488,3 +3488,439 @@ button.destination-tile {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* Hero readability: behind the copy, a blurred, slightly desaturated copy of
+   the photo under a light tint, both fading out left to right so the far side
+   of the photo is untouched. (A masked backdrop-filter would be simpler, but
+   Chrome ignores the mask and blurs the whole hero.) */
+.hero-frost {
+  filter: blur(6px) saturate(0.72) brightness(0.92);
+  pointer-events: none;
+}
+.hero-frost,
+.hero-overlay::before {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 22%, rgb(0 0 0 / 0.5) 42%, transparent 64%);
+  mask-image: linear-gradient(90deg, #000 0%, #000 22%, rgb(0 0 0 / 0.5) 42%, transparent 64%);
+}
+.hero-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: oklch(16% 0.044 247 / 0.18);
+}
+/* On phones the copy runs nearly edge to edge, so the frost reaches further
+   across before it clears, and blurs a little less. */
+@media (width<=760px) {
+  .hero-frost {
+    filter: blur(4px) saturate(0.75) brightness(0.92);
+  }
+  .hero-frost,
+  .hero-overlay::before {
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 40%, rgb(0 0 0 / 0.45) 70%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 40%, rgb(0 0 0 / 0.45) 70%, transparent 100%);
+  }
+}
+
+/* ── Scroll reveal (src/components/PageTransition.tsx) ───────────────────────
+   Content below the fold waits invisible, then fades and rises a short way as
+   it enters, items in a grid a beat apart. Opacity and transform only, so it
+   stays on the compositor; no 3D tilt on large blocks. */
+.reveal-pending {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+}
+.reveal-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 0.7s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Page change: a short, light fade of the new page. Moving the whole <main>
+   in 3D made one enormous layer and stuttered on phones. */
+.travel-page-transition main {
+  animation: 0.45s cubic-bezier(0.25, 0.1, 0.25, 1) both page-fade;
+}
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The destination spotlight swaps with a gentler slide than its old swing. */
+.destination-spotlight {
+  animation: 0.8s cubic-bezier(0.16, 1, 0.3, 1) both spotlight-in;
+}
+@keyframes spotlight-in {
+  from {
+    opacity: 0;
+    transform: translate3d(18px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pending {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Large screens show every service, step and term open, so there is nothing
+   to expand: no "+". (Phones keep it — there they do collapse.) */
+@media (width>=761px) {
+  .responsive-detail summary .detail-indicator,
+  .legal-detail summary > span.detail-indicator:last-child {
+    display: none;
+  }
+}
+
+/* ── Advisor chat, revised ───────────────────────────────────────────────────
+   The conversation scrolls above; the answers to pick from sit below it on a
+   faintly lit shelf, so it's clear which part is yours to tap. */
+.advisor-body {
+  overflow: hidden;
+  gap: 0;
+  padding: 0;
+  min-height: 0;
+}
+.advisor-log {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 16px 18px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+.advisor-input {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 48%;
+  padding: 14px 18px 16px;
+  overflow-y: auto;
+  border-top: 1px solid color-mix(in oklch, var(--primary) 16%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--primary) 6%, transparent),
+    color-mix(in oklch, var(--primary) 2%, transparent)
+  );
+  box-shadow: 0 -12px 18px -14px color-mix(in oklch, var(--background) 90%, transparent);
+  animation: 0.3s detail-reveal;
+}
+.enquiry-chat .advisor-body {
+  padding: 0;
+}
+.enquiry-chat .advisor-log {
+  padding: 16px 4px;
+}
+.enquiry-chat .advisor-input {
+  margin: 0 -10px;
+  padding: 16px 14px 14px;
+  border-radius: 0 0 14px 14px;
+  align-items: flex-end;
+}
+.advisor-panel .advisor-input {
+  align-items: flex-end;
+}
+
+/* Answer options read as buttons: filled, rounded, with hover and press. */
+.advisor-chip {
+  border-radius: 999px;
+  padding: 9px 15px;
+  font-weight: 500;
+  border-color: color-mix(in oklch, var(--primary) 38%, transparent);
+  background: color-mix(in oklch, var(--primary) 8%, var(--background));
+  box-shadow: 0 1px 0 color-mix(in oklch, var(--foreground) 6%, transparent) inset,
+    0 4px 12px -6px color-mix(in oklch, var(--background) 80%, transparent);
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    color 0.2s,
+    transform 0.15s;
+}
+.advisor-chip:hover {
+  border-color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 18%, var(--background));
+  color: var(--foreground);
+  transform: translateY(-1px);
+}
+.advisor-chip:active {
+  transform: translateY(0) scale(0.98);
+}
+.advisor-chip:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.advisor-chip[aria-pressed="true"] {
+  border-color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 26%, var(--background));
+  color: var(--foreground);
+}
+.advisor-primary,
+.advisor-chip.advisor-primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 700;
+}
+.advisor-chip.advisor-primary:hover {
+  background: color-mix(in oklch, var(--primary) 85%, var(--foreground));
+  color: var(--primary-foreground);
+}
+.advisor-chip:disabled {
+  transform: none;
+}
+
+/* Each answer can be taken back; its question returns to the queue. */
+.advisor-msg.user {
+  position: relative;
+}
+.advisor-undo {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s, border-color 0.2s;
+}
+.advisor-msg.user:hover .advisor-undo,
+.advisor-undo:focus-visible {
+  opacity: 1;
+}
+.advisor-undo:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+@media (hover: none) {
+  .advisor-undo {
+    opacity: 0.85;
+  }
+}
+
+.advisor-summary {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in oklch, var(--primary) 22%, transparent);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Header: a contact headset in place of the old globe. */
+.advisor-head .advisor-avatar {
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklch, var(--primary) 10%, var(--background));
+  border: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
+}
+
+/* The star that flies from a tap to the orb (src/shootingStar.ts). */
+.shooting-star,
+.shooting-star-spark {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.shooting-star {
+  width: 14px;
+  height: 14px;
+  background: var(--primary);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  filter: drop-shadow(0 0 6px var(--primary));
+}
+.shooting-star-spark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+
+.advisor-typing {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in oklch, var(--primary) 22%, transparent);
+  border-radius: 4px 18px 18px;
+}
+.advisor-typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: 1s ease-in-out infinite typing;
+}
+.advisor-typing i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.advisor-typing i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* ── "Get in touch with us": a chat window, not a page section ──────────────
+   Framed and rounded, with its own header bar, a scrolling conversation and
+   the answer shelf docked at the bottom. */
+.inner-page .enquiry-wrap.chat-window,
+.enquiry-chat.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--primary) 24%, transparent);
+  border-radius: 18px;
+  background: color-mix(in oklch, var(--secondary) 60%, var(--background));
+  box-shadow:
+    0 30px 70px -20px color-mix(in oklch, var(--background) 85%, transparent),
+    inset 0 1px 0 color-mix(in oklch, var(--foreground) 8%, transparent);
+}
+.chat-window-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid color-mix(in oklch, var(--primary) 16%, transparent);
+  background: color-mix(in oklch, var(--secondary) 85%, var(--background));
+}
+.chat-window-head .advisor-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
+  border-radius: 50%;
+  background: color-mix(in oklch, var(--primary) 10%, var(--background));
+}
+.chat-window-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.chat-window-head p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 3px 0 0;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.chat-window-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 20%, transparent);
+}
+.chat-window-head button {
+  margin-left: auto;
+  padding: 6px;
+  border: 0;
+  background: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.chat-window-head button:hover {
+  color: var(--primary);
+}
+.chat-window .advisor-body {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+.chat-window .advisor-log {
+  padding: 20px 18px;
+}
+.chat-window .advisor-input {
+  margin: 0;
+  padding: 14px 18px 18px;
+  border-radius: 0;
+}
+@media (width<=760px) {
+  .inner-page .enquiry-wrap.chat-window,
+  .enquiry-chat.chat-window {
+    height: min(560px, 82svh);
+    border-radius: 14px;
+  }
+  .chat-window .advisor-log {
+    padding: 16px 14px;
+  }
+  .chat-window .advisor-input {
+    padding: 12px 14px 14px;
+  }
+}
+/* On Contact the chat has the full width to itself; a chat window reads
+   better at a chat window's width. */
+.contact-enquiry .chat-window {
+  max-width: 820px;
+}
+
+/* Full-screen heroes fill the whole viewport, edge to edge, on every screen.
+   Sized to the large viewport (lvh) so a phone's collapsing address bar never
+   leaves a strip of the next section showing; taller content may still grow it. */
+.home-hero,
+.page-hero {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  min-height: 100lvh;
+  max-height: none;
+}
+@media (width<=760px) {
+  .home-hero,
+  .page-hero {
+    height: auto;
+    min-height: 100lvh;
+    max-height: none;
+  }
+}
+/* With the phone's browser bar showing, the bottom (100lvh - 100svh) of the
+   hero sits under it: the content centres within what's actually visible,
+   and the scroll hint stays above the bar. 0 on desktop, where lvh = svh. */
+.home-hero {
+  padding-bottom: calc(100lvh - 100svh);
+}
+.page-hero {
+  padding-bottom: calc(80px + 100lvh - 100svh);
+}
+.hero-bottom {
+  bottom: calc(30px + 100lvh - 100svh);
+}
+@media (width<=760px) {
+  .page-hero {
+    padding-bottom: calc(60px + 100lvh - 100svh);
+  }
+  .hero-bottom {
+    bottom: calc(25px + 100lvh - 100svh);
+  }
+}
