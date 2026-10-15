@@ -3489,36 +3489,26 @@ button.destination-tile {
   cursor: not-allowed;
 }
 
-/* Hero readability: behind the copy, a blurred, slightly desaturated copy of
-   the photo under a light tint, both fading out left to right so the far side
-   of the photo is untouched. (A masked backdrop-filter would be simpler, but
-   Chrome ignores the mask and blurs the whole hero.) */
+/* Hero readability: a barely-there frost behind the copy only — a faint
+   blur, tint and desaturation, feathered out at the edges so it has no visible
+   boundary. The rest of the photograph is untouched. */
+.hero-content,
+.page-hero-content {
+  isolation: isolate;
+}
 .hero-frost {
-  filter: blur(6px) saturate(0.72) brightness(0.92);
-  pointer-events: none;
-}
-.hero-frost,
-.hero-overlay::before {
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 22%, rgb(0 0 0 / 0.5) 42%, transparent 64%);
-  mask-image: linear-gradient(90deg, #000 0%, #000 22%, rgb(0 0 0 / 0.5) 42%, transparent 64%);
-}
-.hero-overlay::before {
-  content: "";
   position: absolute;
-  inset: 0;
-  background: oklch(16% 0.044 247 / 0.18);
-}
-/* On phones the copy runs nearly edge to edge, so the frost reaches further
-   across before it clears, and blurs a little less. */
-@media (width<=760px) {
-  .hero-frost {
-    filter: blur(4px) saturate(0.75) brightness(0.92);
-  }
-  .hero-frost,
-  .hero-overlay::before {
-    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 40%, rgb(0 0 0 / 0.45) 70%, transparent 100%);
-    mask-image: linear-gradient(90deg, #000 0%, #000 40%, rgb(0 0 0 / 0.45) 70%, transparent 100%);
-  }
+  z-index: -1;
+  inset: -48px -64px;
+  left: calc(-1 * max(16px, (100vw - 100%) / 2));
+  right: auto;
+  width: min(820px, 100vw);
+  pointer-events: none;
+  background: oklch(16% 0.044 247 / 0.1);
+  -webkit-backdrop-filter: blur(2.5px) saturate(0.9);
+  backdrop-filter: blur(2.5px) saturate(0.9);
+  -webkit-mask-image: radial-gradient(farthest-side at 32% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(farthest-side at 32% 50%, #000 62%, transparent 100%);
 }
 
 /* ── Scroll reveal (src/components/PageTransition.tsx) ───────────────────────
@@ -3923,4 +3913,30 @@ button.destination-tile {
   .hero-bottom {
     bottom: calc(25px + 100lvh - 100svh);
   }
+}
+
+/* Home stats sit on the same grid as the services above them: thirds of the
+   six columns on desktop (two each), one column each on phones (three across),
+   centred like the service items. */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.stat {
+  justify-content: center;
+  text-align: center;
+}
+@media (width<=760px) {
+  .stat {
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .stat span {
+    margin-inline: auto;
+  }
+}
+
+/* Continent tabs centred under the explorer. */
+.continent-tabs {
+  justify-content: center;
 }

@@ -47,9 +47,9 @@ export function PageHero({
   return (
     <section className="page-hero">
       <img src={image} className="hero-photo" alt={eyebrow} fetchPriority="high" />
-      <img src={image} className="hero-photo hero-frost" alt="" aria-hidden="true" />
       <div className="hero-overlay" />
       <div className="travel-shell page-hero-content">
+        <span className="hero-frost" aria-hidden="true" />
         <Eyebrow>{eyebrow}</Eyebrow>
         <h1>
           {title}

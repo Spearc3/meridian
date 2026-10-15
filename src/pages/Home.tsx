@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowLeft, ArrowRight, X } from "lucide-react";
 import DestinationExplorer from "../components/DestinationExplorer";
+// The moving ocean is three.js: loaded after the still photo has painted.
+const HeroWaves = lazy(() => import("../components/HeroWaves"));
 import ServiceIcon from "../components/ServiceIcon";
 import { Button, Eyebrow } from "../components/ui";
 import { buttonClass } from "../components/buttonClass";
@@ -88,9 +90,12 @@ export default function Home() {
       <main>
         <section className="home-hero" aria-labelledby="home-title">
           <img src={heroOcean} className="hero-photo" alt="Ocean waves breaking along a tropical coastline" fetchPriority="high" />
-          <img src={heroOcean} className="hero-photo hero-frost" alt="" aria-hidden="true" />
+          <Suspense fallback={null}>
+            <HeroWaves className="hero-photo" />
+          </Suspense>
           <div className="hero-overlay" />
           <div className="travel-shell hero-content">
+            <span className="hero-frost" aria-hidden="true" />
             <Eyebrow>{company.name} · Colombo, Sri Lanka</Eyebrow>
             <h1 id="home-title">
               Explore the
